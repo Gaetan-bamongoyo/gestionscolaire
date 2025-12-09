@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Classes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { 
+            box-sizing: border-box; 
+        }
+        
+        :root {
+            --sidebar-bg: #F8F8F8;
+            --sidebar-active-bg: #FFF5F5;
+            --sidebar-active-color: #FF6B6B;
+            --sidebar-text: #374151;
+            --main-bg: #ffffff;
+            --border-color: #E5E7EB;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --button-primary: #3670C7;
+            --button-danger: #FF6B6B;
+            --table-hover: #E6F7F5;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0 20px;
+            background-color: #F8F8F8;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            height: 90vh;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 200px;
+            background-color: #1e1b4b !important;
+            padding: 20px 0;
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-left-color: #fbbf24;
+        }
+
+        .sidebar-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .sidebar.mobile-open {
+            transform: translateX(0);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--main-bg);
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--main-bg);
+        }
+
+        /* Statistics */
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 2px 24px 2px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--button-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: var(--main-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: #f9fafb;
+        }
+
+        .btn-primary {
+            background-color: var(--button-primary);
+            color: white;
+            border-color: var(--button-primary);
+        }
+
+        .btn-primary:hover {
+            background-color: #2c5aa0;
+        }
+
+        .btn-danger {
+            background-color: var(--button-danger);
+            color: white;
+            border-color: var(--button-danger);
+        }
+
+        .btn-danger:hover {
+            background-color: #e55a5a;
+        }
+
+        .search-box {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            width: 250px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            flex: 1;
+            background: transparent;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        /* Table */
+        .table-container {
+            flex: 1;
+            overflow: auto;
+            padding: 0 24px 24px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background-color: var(--main-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        a{
+            text-decoration: none;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .table td {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .table tbody tr:hover {
+            background-color: var(--table-hover);
+        }
+
+        .table tbody tr.active {
+            background-color: var(--table-hover);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .edit-icon {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s ease;
+        }
+
+        .edit-icon:hover {
+            opacity: 1;
+        }
+
+        /* Icons */
+        .icon {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+        }
+
+        @media (max-width: 992px) {
+            body {
+                padding: 0;
+            }
+            
+            .container {
+                height: 100vh;
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            
+            .stats-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 15px;
+                padding: 20px;
+            }
+            /* Ensure menu toggle shows on tablet too */
+            .mobile-menu-toggle {
+                display: block;
+            }
+            /* Put header in two rows: top row = left(toggle)+right(retour/export) */
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            /* Push Retour (first .btn) and following Export to the right */
+            .header-left .btn:first-of-type {
+                margin-left: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+            
+            .container {
+                height: 100vh;
+                border-radius: 0;
+                margin: 0;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .sidebar {
+                width: 100%;
+                padding: 20px 0;
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 1000;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .sidebar-item {
+                padding: 15px 25px;
+                justify-content: flex-start;
+            }
+            
+            .sidebar-item span {
+                display: block;
+            }
+            
+            .sidebar-icon {
+                margin-right: 15px;
+            }
+            
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .header-left {
+                justify-content: flex-start;
+                gap: 10px;
+                flex-wrap: nowrap;
+            }
+            .header-left .btn:first-of-type { margin-left: auto; }
+            .header-left .btn { white-space: nowrap; }
+            
+            .header-left .btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            .header-right {
+                justify-content: center;
+            }
+            
+            .search-box {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .btn-primary {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+            
+            .stats-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .stat-card {
+                padding: 10px;
+            }
+            
+            .stat-number {
+                font-size: 20px;
+            }
+            
+            .stat-label {
+                font-size: 12px;
+            }
+            
+            .table-container {
+                padding: 0 20px 20px;
+            }
+            
+            .table th,
+            .table td {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+            
+            .avatar {
+                width: 24px;
+                height: 24px;
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            /* Stack search above Add new on phones only */
+            .header-right {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .header-right .search-box { width: 100%; }
+            .header-right .btn { align-self: flex-start; }
+            .sidebar {
+                width: 100%;
+            }
+            
+            .sidebar-item {
+                padding: 15px 25px;
+            }
+            
+            .header {
+                padding: 12px 15px;
+            }
+            
+            .header-left .btn {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+            
+            .btn-primary {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+            
+            .search-box {
+                padding: 8px 12px;
+            }
+            
+            .search-box input {
+                font-size: 12px;
+            }
+            
+            .stats-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 8px;
+                padding: 12px;
+            }
+            
+            .stat-card {
+                padding: 8px;
+            }
+            
+            .stat-number {
+                font-size: 16px;
+            }
+            
+            .stat-label {
+                font-size: 10px;
+            }
+            
+            .table-container {
+                padding: 0 15px 15px;
+            }
+            
+            .table th,
+            .table td {
+                padding: 8px 10px;
+                font-size: 11px;
+            }
+            
+            .table th:first-child,
+            .table td:first-child {
+                display: none;
+            }
+            
+            .table th:nth-child(4),
+            .table td:nth-child(4) {
+                display: none;
+            }
+            
+            .table th:nth-child(5),
+            .table td:nth-child(5) {
+                display: none;
+            }
+            
+            .avatar {
+                width: 20px;
+                height: 20px;
+                font-size: 9px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 100%;
+            }
+            
+            .sidebar-item {
+                padding: 12px 20px;
+            }
+            
+            .header {
+                padding: 10px 12px;
+            }
+            
+            .header-left {
+                flex-wrap: nowrap; /* keep one row */
+                gap: 6px;
+            }
+            .header-left .btn:first-of-type { margin-left: auto; }
+            .header-left .btn { white-space: nowrap; }
+            
+            .header-left .btn {
+                padding: 5px 8px;
+                font-size: 10px;
+            }
+            
+            .btn-primary {
+                padding: 5px 10px;
+                font-size: 10px;
+            }
+            
+            .search-box {
+                padding: 6px 10px;
+            }
+            
+            .search-box input {
+                font-size: 11px;
+            }
+            
+            .stats-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 6px;
+                padding: 10px;
+            }
+            
+            .stat-card {
+                padding: 6px;
+            }
+            
+            .stat-number {
+                font-size: 14px;
+            }
+            
+            .stat-label {
+                font-size: 9px;
+            }
+            
+            .table-container {
+                padding: 0 12px 12px;
+            }
+            
+            .table th,
+            .table td {
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+            
+            .table th:nth-child(6),
+            .table td:nth-child(6) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            {% for item in get_classe %}
+        <a href="#" class="sidebar-item" data-class="{{ item.classe }}">
+            <div class="sidebar-icon"><i class="fas fa-users"></i></div>
+            <span>{{ item.classe }}</span>
+            </a>
+            {% endfor %}
+        
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a class="btn" href="{% url 'dashboard' %}">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour
+                </a>
+                <button class="btn">
+                    <i class="fas fa-upload"></i>
+                    Export
+                </button>
+            </div>
+            <div class="header-right">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search here">
+                </div>
+                <a class="btn btn-primary" href="/inscription">
+                    <i class="fas fa-plus"></i>
+                    Add new
+                </a>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-number" id="total-students">6</div>
+                <div class="stat-label">Total Élèves</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-female"></i></div>
+                <div class="stat-number" id="total-girls">3</div>
+                <div class="stat-label">Filles</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-male"></i></div>
+                <div class="stat-number" id="total-boys">3</div>
+                <div class="stat-label">Garçons</div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" class="checkbox"></th>
+                        <th>Nom complet</th>
+                        <th>Sexe</th>
+                        <th>Âge</th>
+                        <th>Lieu et Date de naissance</th>
+                        <th>Téléphone</th>
+                        <th>Parent</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        // Function to update statistics and students
+        function updateStatsAndStudents(className) {
+            // Make AJAX request to get class data
+            fetch(`classe?classe=${className}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Update statistics
+                    document.getElementById('total-students').textContent = data.total;
+                    document.getElementById('total-girls').textContent = data.girls;
+                    document.getElementById('total-boys').textContent = data.boys;
+                    
+                    // Update students table
+                    updateStudentsTable(data.students);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Fallback to default data
+                    document.getElementById('total-students').textContent = '0';
+                    document.getElementById('total-girls').textContent = '0';
+                    document.getElementById('total-boys').textContent = '0';
+                    updateStudentsTable([]);
+                });
+        }
+
+        // Function to update students table
+        function updateStudentsTable(students) {
+            const tbody = document.querySelector('.table tbody');
+            tbody.innerHTML = '';
+            
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 20px;">Aucun élève dans cette classe</td></tr>';
+                return;
+            }
+            
+            students.forEach((student, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="checkbox" class="checkbox"></td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="avatar">${student.initials}</div>
+                            ${student.nom_complet}
+                        </div>
+                    </td>
+                    <td>${student.sexe || '-'}</td>
+                    <td>${student.age || '-'}</td>
+                    <td> ${student.lieu_naissance || '-'},  ${student.date_naissance || '-'}</td>
+                    <td>${student.telephone || '-'}</td>
+                    <td>${student.parent || '-'}</td>
+                    <td>
+                        <i class="fas fa-money-bill-wave" style="margin-right: 8px; cursor: pointer; color: #28a745;" title="Argent"></i>
+                        <i class="fas fa-edit" style="cursor: pointer; color: #007bff;" title="Mettre à jour"></i>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Re-attach event listeners for new rows
+            attachTableEventListeners();
+        }
+
+        // Function to attach event listeners to table rows
+        function attachTableEventListeners() {
+            document.querySelectorAll('.table tbody tr').forEach(row => {
+                row.addEventListener('click', function() {
+                    // Remove active class from all rows
+                    document.querySelectorAll('.table tbody tr').forEach(r => r.classList.remove('active'));
+                    
+                    // Add active class to clicked row
+                    this.classList.add('active');
+                    
+                    // Toggle checkbox
+                    const checkbox = this.querySelector('.checkbox');
+                    if (checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                    }
+                });
+            });
+        }
+
+        // Sidebar navigation
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all items
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Update statistics and students for selected class
+                const selectedClass = this.getAttribute('data-class');
+                updateStatsAndStudents(selectedClass);
+                
+                // Close sidebar on mobile after selection
+                if (window.innerWidth <= 768) {
+                    document.querySelector('.sidebar').classList.remove('mobile-open');
+                }
+                
+                console.log('Selected class:', selectedClass);
+            });
+        });
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('mobile-open');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            const sidebar = document.querySelector('.sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(e.target) && 
+                !toggle.contains(e.target)) {
+                sidebar.classList.remove('mobile-open');
+            }
+        });
+
+        // Initialize with first class data
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the first class and load its data
+            const firstClass = document.querySelector('.sidebar-item[data-class]');
+            if (firstClass) {
+                const className = firstClass.getAttribute('data-class');
+                updateStatsAndStudents(className);
+            }
+        });
+
+        // Search functionality
+        document.querySelector('.search-box input').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Checkbox functionality
+        document.querySelectorAll('.checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const row = this.closest('tr');
+                if (this.checked) {
+                    row.classList.add('active');
+                } else {
+                    row.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

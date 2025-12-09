@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Utilisateur</title>
+    <!-- Police moderne -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- Variables de couleurs --- */
+        :root {
+            --primary-blue: #1e40af; /* Bleu foncé */
+            --primary-light: #3b82f6; /* Bleu clair */
+            --gradient-start: #1e3a8a;
+            --gradient-end: #2563eb;
+            --text-dark: #1f2937;
+            --text-white: #ffffff;
+            --bg-color: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        /* --- En-tête (User Info) --- */
+        header {
+            padding: 25px 40px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .user-info {
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            background: white;
+            padding: 10px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .user-info:hover {
+            transform: translateY(-2px);
+        }
+
+        .user-info span {
+            color: var(--text-dark);
+            font-weight: 400;
+        }
+
+        /* --- Conteneur Principal --- */
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            flex-grow: 1;
+            padding: 0 20px;
+        }
+
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+            animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* --- Styles des Liens (Boutons) --- */
+        .menu-link {
+            display: block; /* Important pour que le lien prenne toute la largeur */
+            position: relative;
+            text-align: center;
+            text-decoration: none;
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+            color: var(--text-white);
+            padding: 20px 0;
+            font-size: 1.25rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px -5px rgba(30, 64, 175, 0.25);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden; /* Pour l'effet Ripple */
+            letter-spacing: 0.5px;
+        }
+
+        /* Effet de survol */
+        .menu-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(30, 64, 175, 0.35);
+            filter: brightness(110%);
+        }
+
+        /* Effet de clic */
+        .menu-link:active {
+            transform: scale(0.98);
+        }
+
+        /* Style spécifique pour Déconnexion (optionnel : un peu plus sombre) */
+        .menu-link.logout {
+            background: linear-gradient(90deg, #172554, #1e3a8a);
+        }
+
+        /* --- Pied de page --- */
+        footer {
+            padding: 20px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        footer strong {
+            color: var(--primary-blue);
+        }
+
+        /* --- Animations --- */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Effet d'onde (Ripple) */
+        .ripple {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple-anim 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-anim {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive Mobile */
+        @media (max-width: 480px) {
+            header {
+                justify-content: center;
+            }
+            .menu-link {
+                padding: 16px 0;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="user-info">
+            User : <span>{{user.username}}</span>
+        </div>
+    </header>
+
+    <!-- Menu Principal -->
+    <main>
+        <div class="menu-container">
+            <!-- Remplacez le '#' par vos vrais liens (ex: inscription.html) -->
+            <a href="{% url 'classe' %}" class="menu-link">Inscription</a>
+            <a href="{% url 'cours' %}" class="menu-link">Gestion point</a>
+            <a href="{% url 'logout' %}" class="menu-link logout">Deconnexion</a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>copyright 2025 || Design by <strong>Helpme</strong></p>
+    </footer>
+
+    <script>
+        // Effet "Ripple" (Onde) au clic sur les liens
+        const links = document.querySelectorAll('.menu-link');
+
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Création de l'élément ripple
+                let x = e.clientX - e.target.getBoundingClientRect().left;
+                let y = e.clientY - e.target.getBoundingClientRect().top;
+
+                let ripples = document.createElement('span');
+                ripples.style.left = x + 'px';
+                ripples.style.top = y + 'px';
+                ripples.classList.add('ripple');
+                this.appendChild(ripples);
+
+                // Suppression après l'animation
+                setTimeout(() => {
+                    ripples.remove();
+                }, 600);
+            });
+        });
+    </script>
+</body>
+</html>
