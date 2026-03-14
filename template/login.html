@@ -288,7 +288,7 @@
 
             <div class="form-content">
                 <h2>Connexion</h2>
-                <form action="{% url 'login' %}" method="post">
+                <form action="{% url 'login_user' %}" method="post">
                     {% csrf_token %}
                     
                     <!-- Champ Nom d'utilisateur -->
@@ -322,7 +322,7 @@
 
                     <!-- Lien Pied de formulaire -->
                     <p class="signup-text">
-                        Vous n'avez pas de compte ? <a href="#">S'inscrire</a>
+                        Vous n'avez pas de compte ? <a href="{% url 'create_compte' %}">S'inscrire</a>
                     </p>
                 </form>
             </div>

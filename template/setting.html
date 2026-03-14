@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paramètres</title>
+    <!-- Police moderne -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        *, *::before, *::after { 
-            box-sizing: border-box; 
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
         }
-        
+
         :root {
-            --sidebar-bg: #1e40af;
+            /* Même couleur que la sidebar du dashboard (#0f172a approx.) */
+            --sidebar-bg: #0f172a;
             --sidebar-active-bg: rgba(255, 255, 255, 0.2);
             --sidebar-active-color: white;
             --sidebar-text: white;
@@ -26,7 +32,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 0 20px;
             background-color: #F8F8F8;
@@ -44,46 +50,108 @@
             height: 90vh;
             background-color: white;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            border: 1px solid var(--border-color);
         }
 
-        /* Sidebar */
+        /* Sidebar Styles */
         .sidebar {
-            width: 200px;
+            width: 280px;
             background-color: var(--sidebar-bg) !important;
-            padding: 20px 0;
-            border-right: 1px solid var(--border-color);
+            padding: 24px 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 0 24px 20px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .sidebar-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 18px rgba(59, 130, 246, 0.5);
+        }
+
+        .sidebar-title-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.3;
+        }
+
+        .sidebar-title-text span.main {
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .sidebar-title-text span.sub {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .sidebar-item {
             display: flex;
             align-items: center;
-            padding: 12px 20px;
-            color: var(--sidebar-text);
+            padding: 14px 24px;
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
-            transition: all 0.2s ease;
-            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: transparent;
+            transition: all 0.3s ease;
         }
 
         .sidebar-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
         }
 
         .sidebar-item.active {
             background-color: var(--sidebar-active-bg);
-            color: var(--sidebar-active-color);
-            border-left-color: #fbbf24;
+            color: white;
+        }
+
+        .sidebar-item.active::before {
+            background-color: var(--button-primary);
         }
 
         .sidebar-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
+            width: 24px;
+            height: 24px;
+            margin-right: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.1rem;
         }
 
         .mobile-menu-toggle {
@@ -145,6 +213,22 @@
             gap: 12px;
         }
 
+        .header-title {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .header-title .page-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .header-title .page-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
         .btn {
             padding: 8px 16px;
             border-radius: 6px;
@@ -162,6 +246,39 @@
 
         .btn:hover {
             background-color: #f9fafb;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 18px;
+            background-color: #f3f4f6;
+            color: #4b5563;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #e5e7eb;
+            margin-right: 8px;
+        }
+
+        .btn-back:hover {
+            background-color: white;
+            color: var(--button-primary);
+            border-color: var(--button-primary);
+            transform: translateX(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-back i {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-back:hover i {
+            transform: scale(1.1);
         }
 
         .btn-primary {
@@ -182,6 +299,94 @@
 
         .btn-danger:hover {
             background-color: #e55a5a;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-active {
+            background-color: #ecfdf5;
+            color: #059669;
+            border: 1px solid #10b981;
+        }
+
+        .status-inactive {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #ef4444;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: currentColor;
+        }
+
+        /* Switch Toggle Design */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        input:checked + .slider {
+            background-color: var(--button-primary);
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--button-primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
         }
 
         .search-box {
@@ -235,171 +440,482 @@
         }
 
         .section-body {
-            padding: 20px;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* Override for ecole section to keep its specific layout */
+        .section[data-section="ecole"] .section-body {
+            display: block;
+        }
+
+        /* Responsive behavior for the side-by-side layout */
+        @media (max-width: 1024px) {
+            .section-body {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Ecole Profile Form - Enhanced */
+        .ecole-profile {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            background: white;
+        }
+
+        .ecole-profile-picture {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px;
+            background: #f8f9fa;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            min-width: 280px;
+        }
+
+        .ecole-logo-container {
+            width: 180px;
+            height: 180px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f0f4ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #e5e7eb;
+            margin-bottom: 16px;
+        }
+
+        .ecole-logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .ecole-logo-container i {
+            font-size: 60px;
+            color: #bfdbfe;
+        }
+
+        .ecole-logo-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin: 12px 0 4px;
+        }
+
+        .ecole-logo-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .ecole-logo-btn {
+            width: 100%;
+            padding: 10px 16px;
+            border: 2px solid var(--button-primary);
+            background: white;
+            color: var(--button-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .ecole-logo-btn:hover {
+            background: #f0f7ff;
+        }
+
+        .ecole-logo-format {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .ecole-profile-form {
+            flex: 1;
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .form-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ecole-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .ecole-form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ecole-form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .ecole-form-group label {
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ecole-form-group label .required {
+            color: #ef4444;
+            margin-left: 4px;
+        }
+
+        .ecole-form-group input {
+            width: 100%;
+            display: inline-block;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .ecole-form-group input:focus {
+            border-color: var(--button-primary);
+            outline: none;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(54, 112, 199, 0.15);
+        }
+
+        .form-submit {
+            margin-top: 32px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--button-primary), #2563eb);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+            background: linear-gradient(135deg, #2c5aa0, #1d4ed8);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 1024px) {
+            .ecole-profile {
+                gap: 30px;
+            }
+
+            .ecole-profile-picture {
+                min-width: 260px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .ecole-profile {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .ecole-profile-picture {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .ecole-form-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .ecole-profile-form {
+                width: 100%;
+            }
+
+            .form-section-title {
+                font-size: 13px;
+            }
+
+            .btn-submit {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
         }
 
         .form-container {
-            margin-bottom: 30px;
             padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
+            background-color: #ffffff;
+            border-radius: 12px;
             border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            transition: box-shadow 0.3s ease;
+            margin-bottom: 0; /* Removed margin as grid gap handles spacing now */
+            position: sticky;
+            top: 24px;
+        }
+
+        .form-container:hover {
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.06);
         }
 
         .table-section {
-            margin-top: 20px;
+            margin-top: 0; /* Removed margin as grid gap handles spacing now */
+            background-color: #ffffff;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .grid {
             display: grid;
             grid-template-columns: repeat(12, 1fr);
-            column-gap: 20px;
-            row-gap: 16px;
+            column-gap: 24px;
+            row-gap: 20px;
         }
 
-        .col-4 { grid-column: span 4; }
-        .col-6 { grid-column: span 6; }
-        .col-8 { grid-column: span 8; }
-        .col-12 { grid-column: span 12; }
+        .col-4, .col-6, .col-8, .col-12 {
+            grid-column: span 12;
+        }
+
+        .col-12 {
+            grid-column: span 12;
+        }
 
         label {
             display: block;
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            font-weight: 500;
+            font-size: 13px;
+            color: #4b5563;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        input, select {
+        input,
+        select {
             width: 100%;
-            padding: 12px 14px;
-            border: 1px solid var(--border-color);
+            display: inline-block;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 14px;
-            background: #fff;
-            transition: all 0.2s ease;
+            background: #f9fafb;
+            color: #1f2937;
+            transition: all 0.3s ease;
             box-sizing: border-box;
         }
 
         input::placeholder {
             color: #9ca3af;
+            font-weight: 400;
         }
 
-        input:focus, select:focus {
-            outline: 2px solid #bfdbfe;
-            outline-offset: 1px;
+        input:hover,
+        select:hover {
+            border-color: #9ca3af;
+            background: #ffffff;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
             border-color: var(--button-primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(54, 112, 199, 0.15);
         }
 
         /* Mobile input improvements */
         @media (max-width: 768px) {
-            input, select {
+            input,
+            select {
                 -webkit-appearance: none;
                 -moz-appearance: none;
                 appearance: none;
-                border: 2px solid var(--border-color);
+                border: 1px solid #d1d5db;
                 border-radius: 8px;
                 min-height: 48px;
                 font-size: 16px;
-                background-color: #fff;
+                background-color: #f9fafb;
             }
-            
-            input:focus, select:focus {
+
+            input:focus,
+            select:focus {
                 border-color: var(--button-primary);
                 outline: none;
-                box-shadow: 0 0 0 3px rgba(54, 112, 199, 0.1);
+                box-shadow: 0 0 0 4px rgba(54, 112, 199, 0.15);
             }
-            
-            select {
-                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-                background-position: right 12px center;
-                background-repeat: no-repeat;
-                background-size: 16px;
-                padding-right: 40px;
-            }
+        }
+        
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 40px;
+            cursor: pointer;
         }
 
         .btn-form {
-            padding: 12px 20px;
+            padding: 12px 24px;
             border-radius: 8px;
-            border: 1px solid transparent;
-            background: var(--button-primary);
+            border: none;
+            background: linear-gradient(135deg, var(--button-primary), #2563eb);
             color: white;
             cursor: pointer;
             font-weight: 600;
             font-size: 14px;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn-form:hover {
-            background: #2c5aa0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+            background: linear-gradient(135deg, #2c5aa0, #1d4ed8);
+        }
+
+        .btn-form:active {
+            transform: translateY(0);
         }
 
         .btn-muted {
-            background: #fff;
-            color: var(--text-primary);
-            border-color: var(--border-color);
+            background: #ffffff;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn-muted:hover {
-            background: #f9fafb;
+            background: #f3f4f6;
+            color: #111827;
+            border-color: #9ca3af;
+            transform: translateY(-1px);
         }
 
         .actions {
             display: flex;
-            gap: 12px;
-            margin-top: 16px;
+            align-items: center;
+            gap: 16px;
+            margin-top: 20px;
         }
 
         .hint {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 8px;
+            font-size: 13px;
+            color: #6b7280;
+            font-style: italic;
         }
 
         /* Table */
         .table-container {
             flex: 1;
             overflow: auto;
-            padding: 0 24px 24px;
+            padding: 24px;
         }
 
         .table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            background-color: var(--main-bg);
-            border-radius: 8px;
+            background-color: #ffffff;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-
-        .table th,
-        .table td {
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
         }
 
         .table th {
-            background-color: #f9fafb;
+            background-color: #f3f4f6;
             font-weight: 600;
-            color: var(--text-primary);
-            font-size: 14px;
+            color: #374151;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 16px;
+            border-bottom: 2px solid #e5e7eb;
+            text-align: left;
         }
 
         .table td {
             font-size: 14px;
-            color: var(--text-primary);
+            color: #4b5563;
+            padding: 16px;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+            text-align: left;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
         }
 
         .table tbody tr:hover {
-            background-color: var(--table-hover);
+            background-color: #f8fafc;
+            transform: scale(1.001);
         }
 
         .table tbody tr.active {
-            background-color: var(--table-hover);
+            background-color: #eff6ff;
         }
 
         .table-actions {
@@ -408,28 +924,58 @@
         }
 
         .checkbox {
-            width: 16px;
-            height: 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 3px;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
             cursor: pointer;
+            transition: all 0.2s ease;
+            appearance: none;
+            background-color: white;
+            position: relative;
+        }
+
+        .checkbox:checked {
+            background-color: var(--button-primary);
+            border-color: var(--button-primary);
+        }
+
+        .checkbox:checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 2px;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .checkbox:hover {
+            border-color: var(--button-primary);
         }
 
         .filter-input {
-            width: 280px;
+            width: 320px;
             max-width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
+            padding: 12px 16px 12px 40px;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
             font-size: 14px;
-            background: #fff;
-            margin-bottom: 16px;
+            background: #f9fafb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat 12px center;
+            background-size: 18px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
         }
 
         .filter-input:focus {
-            outline: 2px solid #bfdbfe;
+            outline: none;
+            background-color: #fff;
             border-color: var(--button-primary);
+            box-shadow: 0 0 0 4px rgba(54, 112, 199, 0.15);
         }
+
 
         .hidden {
             display: none;
@@ -455,41 +1001,45 @@
             body {
                 padding: 0;
             }
-            
+
             .container {
                 height: 100vh;
                 margin: 0;
                 border-radius: 0;
                 box-shadow: none;
             }
-            
+
             .mobile-menu-toggle {
                 display: block;
             }
-            
+
             .header {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 12px;
             }
-            
+
             .header-left {
                 display: flex;
                 align-items: center;
                 gap: 10px;
             }
-            
+
             .grid {
                 grid-template-columns: 1fr;
                 gap: 16px;
             }
 
             /* Force every field to full width for readability */
-            .col-4, .col-6, .col-8, .col-12 {
+            .col-4,
+            .col-6,
+            .col-8,
+            .col-12 {
                 grid-column: 1 / -1;
             }
-            
-            input, select {
+
+            input,
+            select {
                 padding: 12px 14px;
                 font-size: 16px;
                 width: 100%;
@@ -501,17 +1051,17 @@
             body {
                 padding: 0;
             }
-            
+
             .container {
                 height: 100vh;
                 border-radius: 0;
                 margin: 0;
             }
-            
+
             .mobile-menu-toggle {
                 display: block;
             }
-            
+
             .sidebar {
                 width: 100%;
                 padding: 20px 0;
@@ -524,59 +1074,67 @@
                 transition: transform 0.3s ease;
                 background-color: var(--sidebar-bg) !important;
             }
-            
+
             .sidebar.mobile-open {
                 transform: translateX(0);
             }
-            
+
             .sidebar-item {
                 padding: 15px 25px;
                 justify-content: flex-start;
             }
-            
+
             .sidebar-item span {
                 display: block;
             }
-            
+
             .sidebar-icon {
                 margin-right: 15px;
             }
-            
+
             .header {
                 padding: 15px 20px;
                 flex-direction: column;
                 gap: 15px;
                 align-items: stretch;
             }
-            
+
             .header-left {
                 justify-content: flex-start;
                 gap: 10px;
                 flex-wrap: nowrap;
             }
-            
+
             .content-area {
                 padding: 20px;
             }
-            
+
+            .section-body {
+                grid-template-columns: 1fr;
+            }
+
             .grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
 
             /* Force every field to full width for readability */
-            .col-4, .col-6, .col-8, .col-12 {
+            .col-4,
+            .col-6,
+            .col-8,
+            .col-12 {
                 grid-column: 1 / -1;
             }
-            
+
             .filter-input {
                 width: 100%;
                 padding: 12px 14px;
                 font-size: 16px;
                 box-sizing: border-box;
             }
-            
-            input, select {
+
+            input,
+            select {
                 padding: 12px 14px;
                 font-size: 16px;
                 border-radius: 8px;
@@ -584,24 +1142,24 @@
                 box-sizing: border-box;
                 min-height: 48px;
             }
-            
+
             label {
                 font-size: 16px;
                 margin-bottom: 8px;
                 font-weight: 500;
             }
-            
+
             .table th,
             .table td {
                 padding: 8px 10px;
                 font-size: 12px;
             }
-            
+
             .table-actions {
                 flex-direction: column;
                 gap: 4px;
             }
-            
+
             .table-actions .btn {
                 padding: 4px 8px;
                 font-size: 11px;
@@ -612,34 +1170,38 @@
             .header {
                 padding: 12px 15px;
             }
-            
+
             .header-left .btn {
                 padding: 10px 14px;
                 font-size: 16px;
             }
-            
+
             .content-area {
                 padding: 15px;
             }
-            
+
             .form-container {
                 padding: 15px;
             }
-            
+
             .section-body {
                 padding: 15px;
             }
-            
+
             .grid {
                 gap: 16px;
             }
 
             /* Force every field to full width for readability */
-            .col-4, .col-6, .col-8, .col-12 {
+            .col-4,
+            .col-6,
+            .col-8,
+            .col-12 {
                 grid-column: 1 / -1;
             }
-            
-            input, select {
+
+            input,
+            select {
                 padding: 12px 14px;
                 font-size: 16px;
                 border-radius: 8px;
@@ -647,29 +1209,29 @@
                 box-sizing: border-box;
                 min-height: 48px;
             }
-            
+
             label {
                 font-size: 16px;
                 margin-bottom: 8px;
                 font-weight: 500;
             }
-            
+
             .btn-form {
                 padding: 10px 16px;
                 font-size: 12px;
             }
-            
+
             .table th,
             .table td {
                 padding: 8px 10px;
                 font-size: 14px;
             }
-            
+
             .table th:first-child,
             .table td:first-child {
                 display: none;
             }
-            
+
             .table th:nth-child(3),
             .table td:nth-child(3) {
                 display: none;
@@ -680,29 +1242,33 @@
             .header {
                 padding: 10px 12px;
             }
-            
+
             .content-area {
                 padding: 12px;
             }
-            
+
             .form-container {
                 padding: 12px;
             }
-            
+
             .section-body {
                 padding: 12px;
             }
-            
+
             .grid {
                 gap: 14px;
             }
 
             /* Force every field to full width for readability */
-            .col-4, .col-6, .col-8, .col-12 {
+            .col-4,
+            .col-6,
+            .col-8,
+            .col-12 {
                 grid-column: 1 / -1;
             }
-            
-            input, select {
+
+            input,
+            select {
                 padding: 12px 14px;
                 font-size: 16px;
                 border-radius: 8px;
@@ -710,24 +1276,24 @@
                 box-sizing: border-box;
                 min-height: 48px;
             }
-            
+
             label {
                 font-size: 14px;
                 margin-bottom: 6px;
                 font-weight: 500;
             }
-            
+
             .btn-form {
                 padding: 8px 12px;
                 font-size: 11px;
             }
-            
+
             .table th,
             .table td {
                 padding: 4px 6px;
                 font-size: 10px;
             }
-            
+
             .table th:nth-child(4),
             .table td:nth-child(4) {
                 display: none;
@@ -737,31 +1303,36 @@
     <script>
         function handleBack() {
             if (window.history && window.history.length > 1) { window.history.back(); }
-            else { window.location.href = '/'; }
+            else { window.location.href = '/dashboard'; }
         }
 
-        function showSection(sectionKey) {
+        function showSection(sectionKey, updateHash = true) {
             // Hide all sections
             document.querySelectorAll('.section').forEach(section => {
                 section.classList.add('hidden');
             });
-            
+
             // Show selected section
             const activeSection = document.querySelector(`.section[data-section="${sectionKey}"]`);
             if (activeSection) {
                 activeSection.classList.remove('hidden');
+                
+                // Update URL hash without jumping if we want hash-based navigation
+                if (updateHash) {
+                    window.location.hash = sectionKey;
+                }
             }
-            
+
             // Update sidebar active state
             document.querySelectorAll('.sidebar-item').forEach(item => {
                 item.classList.remove('active');
             });
-            
+
             const activeItem = document.querySelector(`.sidebar-item[data-section="${sectionKey}"]`);
             if (activeItem) {
                 activeItem.classList.add('active');
             }
-            
+
             // Close sidebar on mobile after selection
             if (window.innerWidth <= 768) {
                 const sidebar = document.querySelector('.sidebar');
@@ -773,14 +1344,23 @@
             }
         }
 
+        function handleHashChange() {
+            const hash = window.location.hash.replace('#', '');
+            if (hash) {
+                showSection(hash, false);
+            }
+        }
+
+        window.addEventListener('hashchange', handleHashChange);
+
         function attachTableFilters() {
             const inputs = document.querySelectorAll('[data-filter-for]');
             inputs.forEach(input => {
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     const term = (this.value || '').toLowerCase();
                     const table = document.getElementById(this.getAttribute('data-filter-for'));
                     if (!table) return;
-                    
+
                     const rows = table.querySelectorAll('tbody tr');
                     rows.forEach(row => {
                         const text = row.textContent.toLowerCase();
@@ -793,13 +1373,13 @@
         // Table row selection
         function attachTableRowListeners() {
             document.querySelectorAll('.table tbody tr').forEach(row => {
-                row.addEventListener('click', function() {
+                row.addEventListener('click', function () {
                     // Remove active class from all rows
                     document.querySelectorAll('.table tbody tr').forEach(r => r.classList.remove('active'));
-                    
+
                     // Add active class to clicked row
                     this.classList.add('active');
-                    
+
                     // Toggle checkbox
                     const checkbox = this.querySelector('.checkbox');
                     if (checkbox) {
@@ -812,7 +1392,7 @@
         // Checkbox functionality
         function attachCheckboxListeners() {
             document.querySelectorAll('.checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
+                checkbox.addEventListener('change', function () {
                     const row = this.closest('tr');
                     if (this.checked) {
                         row.classList.add('active');
@@ -827,7 +1407,7 @@
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
             const overlay = document.querySelector('.sidebar-overlay');
-            
+
             if (window.innerWidth <= 768) {
                 sidebar.classList.toggle('mobile-open');
                 if (overlay) {
@@ -837,13 +1417,13 @@
         }
 
         // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             const sidebar = document.querySelector('.sidebar');
             const toggle = document.querySelector('.mobile-menu-toggle');
             const overlay = document.querySelector('.sidebar-overlay');
-            
-            if (window.innerWidth <= 768 && 
-                !sidebar.contains(e.target) && 
+
+            if (window.innerWidth <= 768 &&
+                !sidebar.contains(e.target) &&
                 toggle && !toggle.contains(e.target)) {
                 sidebar.classList.remove('mobile-open');
                 if (overlay) {
@@ -853,7 +1433,7 @@
         });
 
         // Close sidebar when clicking overlay
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (e.target.classList.contains('sidebar-overlay')) {
                 const sidebar = document.querySelector('.sidebar');
                 sidebar.classList.remove('mobile-open');
@@ -862,41 +1442,96 @@
         });
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            showSection('annee');
+        document.addEventListener('DOMContentLoaded', function () {
+            // Handle initial hash or default to 'annee'
+            const initialSection = window.location.hash.replace('#', '') || 'annee';
+            showSection(initialSection, false);
+            
             attachTableFilters();
             attachTableRowListeners();
             attachCheckboxListeners();
+
+            // Gestion du changement de logo
+            const logoInput = document.getElementById('logo_ecole');
+            const nomInput = document.getElementById('nom_ecole');
+            
+            if (logoInput) {
+                logoInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            const container = document.getElementById('logo-preview');
+                            container.innerHTML = '<img src="' + event.target.result + '" alt="Logo preview" id="logo-img">';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            // Mise à jour du nom de l'école lors de la saisie
+            if (nomInput) {
+                nomInput.addEventListener('input', function() {
+                    const nameDisplay = document.getElementById('ecole-name');
+                    if (nameDisplay) {
+                        nameDisplay.textContent = this.value || '{{ ecole.nom }}';
+                    }
+                });
+            }
         });
     </script>
     {% load static %}
 </head>
+
 <body>
     <div class="container">
         <!-- Sidebar Overlay -->
         <div class="sidebar-overlay"></div>
-        
+
         <!-- Sidebar -->
         <div class="sidebar">
-            <a href="#" class="sidebar-item active" data-section="annee" onclick="showSection('annee')">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-gear"></i>
+                </div>
+                <div class="sidebar-title-text">
+                    <span class="main">Paramètres</span>
+                    <span class="sub">Configuration générale</span>
+                </div>
+            </div>
+            <a href="#annee" class="sidebar-item" data-section="annee">
                 <div class="sidebar-icon"><i class="fas fa-calendar-alt"></i></div>
                 <span>Année scolaire</span>
             </a>
-            <a href="#" class="sidebar-item" data-section="options" onclick="showSection('options')">
+            {% if user.section == "Secondaire" %}
+            <a href="#options" class="sidebar-item" data-section="options">
                 <div class="sidebar-icon"><i class="fas fa-cog"></i></div>
                 <span>Options</span>
             </a>
-            <a href="#" class="sidebar-item" data-section="classes" onclick="showSection('classes')">
+            {% endif %}
+            <a href="#classes" class="sidebar-item" data-section="classes">
                 <div class="sidebar-icon"><i class="fas fa-school"></i></div>
                 <span>Classes</span>
             </a>
-            <a href="#" class="sidebar-item" data-section="users" onclick="showSection('users')">
+            <a href="#users" class="sidebar-item" data-section="users">
                 <div class="sidebar-icon"><i class="fas fa-users"></i></div>
                 <span>Utilisateurs</span>
             </a>
-            <a href="#" class="sidebar-item" data-section="perms" onclick="showSection('perms')">
+            {% comment %} <a href="#sections" class="sidebar-item" data-section="sections">
                 <div class="sidebar-icon"><i class="fas fa-shield-alt"></i></div>
-                <span>Permissions</span>
+                <span>Sections</span>
+            </a> {% endcomment %}
+            <a href="#frais" class="sidebar-item" data-section="frais">
+                <div class="sidebar-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                <span>Frais scolaires</span>
+            </a>
+            <a href="#repartition" class="sidebar-item" data-section="repartition">
+                <div class="sidebar-icon"><i class="fas fa-chart-pie"></i></div>
+                <span>Répartition Frais</span>
+            </a>
+            <a href="#ecole" class="sidebar-item" data-section="ecole">
+                <div class="sidebar-icon"><i class="fas fa-building"></i></div>
+                <span>Profil école</span>
             </a>
         </div>
 
@@ -908,337 +1543,1066 @@
                     <button class="mobile-menu-toggle" onclick="toggleSidebar()">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <button class="btn" onclick="handleBack()">
-                        <i class="fas fa-arrow-left"></i>
-                        Retour
-                    </button>
-    </div>
-    </div>
+                    <a class="btn-back" href="{% url 'dashboard' %}">
+                        <i class="fas fa-circle-arrow-left"></i>
+                        <span>Retour</span>
+                    </a>
+                    <div class="header-title">
+                        <span class="page-title">Paramètres de l’établissement</span>
+                        <span class="page-subtitle">Années scolaires, options, classes, utilisateurs et
+                            permissions</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span class="hint">Modifiez ici la configuration globale de votre école.</span>
+                </div>
+            </div>
 
             <!-- Content Area -->
             <div class="content-area">
 
-    <!-- Année scolaire -->
-    <section class="section" data-section="annee">
-        <div class="section-body">
-                <div class="form-container">
-            <form action="" method="post">
-                {% csrf_token %}
-                <div class="grid">
-                    <div class="col-4">
-                        <label for="annee_nom">Intitulé</label>
-                        <input type="text" id="annee_nom" name="annee_nom" placeholder="2024 - 2025" required>
-                    </div>
-                    <div class="col-4">
-                        <label for="annee_debut">Début</label>
-                        <input type="date" id="annee_debut" name="annee_debut" required>
-                    </div>
-                    <div class="col-4">
-                        <label for="annee_fin">Fin</label>
-                        <input type="date" id="annee_fin" name="annee_fin" required>
-                    </div>
-                    <div class="col-12 actions">
-                                    <button type="submit" class="btn-form">Enregistrer</button>
-                        <span class="hint">Crée ou met à jour l'année active.</span>
-                    </div> 
-                </div>
-            </form>
-                </div>
-
-                <div class="table-section">
-                    <div class="table-container">
-                <input type="search" class="filter-input" placeholder="Filtrer..." data-filter-for="table-annees">
-                            <table id="table-annees" class="table">
-                <thead>
-                    <tr>
-                                        <th><input type="checkbox" class="checkbox"></th>
-                        <th>#</th>
-                        <th>Intitulé</th>
-                        <th>Début</th>
-                        <th>Fin</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in liste_annees %}
-                    <tr>
-                                        <td><input type="checkbox" class="checkbox"></td>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ item.nom }}</td>
-                        <td>{{ item.debut }}</td>
-                        <td>{{ item.fin }}</td>
-                        <td class="table-actions">
-                            <a href="{% url 'annee_edit' item.id %}" class="btn btn-muted">Modifier</a>
-                            <a href="{% url 'annee_delete' item.id %}" class="btn btn-muted">Supprimer</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                                    <tr><td colspan="6">Aucune année scolaire.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-                    </div>
-                </div>
-        </div>
-    </section>
-
-    <!-- Options -->
-    <section class="section hidden" data-section="options">
-        <div class="section-body">
-            <div class="form-container">
-            <form action="" method="post">
-                {% csrf_token %}
-                <div class="grid">
-                    <div class="col-6">
-                        <label for="option_nom">Nom de l'option</label>
-                        <input type="text" id="option_nom" name="option_nom" placeholder="Littéraire, Commercial..." required>
-                    </div>
-                    <div class="col-6">
-                        <label for="option_desc">Description</label>
-                        <input type="text" id="option_desc" name="option_desc" placeholder="Description courte">
-                    </div>
-                    <div class="col-12 actions">
-                                    <button type="submit" class="btn-form">Enregistrer</button>
-                    </div>
-                </div>
-            </form>
-            </div>
-
-            <div class="table-section">
-                <div class="table-container">
-                <input type="search" class="filter-input" placeholder="Filtrer..." data-filter-for="table-options">
-                            <table id="table-options" class="table">
-                <thead>
-                    <tr>
-                                        <th><input type="checkbox" class="checkbox"></th>
-                        <th>#</th>
-                        <th>Nom</th>
-                        <th>Description</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in liste_options %}
-                    <tr>
-                                        <td><input type="checkbox" class="checkbox"></td>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ item.nom }}</td>
-                        <td>{{ item.description }}</td>
-                        <td class="table-actions">
-                            <a href="{% url 'option_edit' item.id %}" class="btn btn-muted">Modifier</a>
-                            <a href="{% url 'option_delete' item.id %}" class="btn btn-muted">Supprimer</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                                    <tr><td colspan="5">Aucune option.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Classes -->
-    <section class="section hidden" data-section="classes">
-        <div class="section-body">
-            <div class="form-container">
-            <form action="" method="post">
-                {% csrf_token %}
-                <div class="grid">
-                    <div class="col-6">
-                        <label for="classe_nom">Nom</label>
-                        <input type="text" id="classe_nom" name="classe_nom" placeholder="1, 2, 3 ..." required>
-                    </div>
-                    <div class="col-6">
-                        <label for="classe_niveau">Niveau</label>
-                        <select id="classe_niveau" name="classe_niveau" required>
-                            <option value="">Sélectionner</option>
-                            <option value="Primaire">Primaire</option>
-                            <option value="Secondaire">Secondaire</option>
-                        </select>
-                    </div>
-                    <div class="col-12 actions">
-                                    <button type="submit" class="btn-form">Enregistrer</button>
-                    </div>
-                </div>
-            </form>
-            </div>
-
-            <div class="table-section">
-                <div class="table-container">
-                <input type="search" class="filter-input" placeholder="Filtrer..." data-filter-for="table-classes">
-                            <table id="table-classes" class="table">
-                <thead>
-                    <tr>
-                                        <th><input type="checkbox" class="checkbox"></th>
-                        <th>#</th>
-                        <th>Nom</th>
-                        <th>Niveau</th>
-                        <th>Option</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in liste_classes %}
-                    <tr>
-                                        <td><input type="checkbox" class="checkbox"></td>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ item.nom }}</td>
-                        <td>{{ item.niveau }}</td>
-                        <td>{% if item.option %}{{ item.option.nom }}{% else %}-{% endif %}</td>
-                        <td class="table-actions">
-                            <a href="{% url 'classe_edit' item.id %}" class="btn btn-muted">Modifier</a>
-                            <a href="{% url 'classe_delete' item.id %}" class="btn btn-muted">Supprimer</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                                    <tr><td colspan="6">Aucune classe.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Utilisateurs -->
-    <section class="section hidden" data-section="users">
-        <div class="section-body">
+                <!-- Année scolaire -->
+                <section class="section" data-section="annee">
+                    <div class="section-body">
                         <div class="form-container">
-            <form action="" method="post">
-                {% csrf_token %}
-                <div class="grid">
-                    <div class="col-4">
-                        <label for="user_username">Nom d'utilisateur</label>
-                        <input type="text" id="user_username" name="user_username" placeholder="ex: jdoe" required>
-                    </div>
-                    <div class="col-4">
-                        <label for="user_email">Email</label>
-                        <input type="email" id="user_email" name="user_email" placeholder="ex: jdoe@mail.com" required>
-                    </div>
-                    <div class="col-4">
-                        <label for="user_role">Rôle</label>
-                        <select id="user_role" name="user_role">
-                            <option value="Utilisateur">Utilisateur</option>
-                            <option value="Admin">Admin</option>
-                        </select>
-                    </div>
-                    <div class="col-6">
-                        <label for="user_password">Mot de passe</label>
-                        <input type="password" id="user_password" name="user_password" required>
-                    </div>
-                    <div class="col-6">
-                        <label for="user_password2">Confirmation</label>
-                        <input type="password" id="user_password2" name="user_password2" required>
-                    </div>
-                    <div class="col-12 actions">
-                                    <button type="submit" class="btn-form">Créer l'utilisateur</button>
-                    </div>
-                </div>
-            </form>
+                            <form id="anneeForm" method="post">
+                                {% csrf_token %}
+                                <div class="grid">
+                                    {% comment %} <input type="text" id="id_annee" > {% endcomment %}
+                                    <div class="col-4">
+                                        <label for="annee_nom">Intitulé</label>
+                                        <input type="hidden" id="id_annee" name="id_annee">
+                                        <input type="text" id="annee_nom" name="annee_nom" placeholder="2024 - 2025"
+                                            required>
+                                    </div>
+                                    <div class="col-6">
+                                        <div id="annee-success"></div>
+                                    </div>
+                                    <div class="col-12 actions">
+                                        <button type="submit" class="btn-form">Enregistrer</button>
+                                        <span class="hint">Crée ou met à jour l'année active.</span>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
 
                         <div class="table-section">
                             <div class="table-container">
-                <input type="search" class="filter-input" placeholder="Filtrer..." data-filter-for="table-users">
-                            <table id="table-users" class="table">
-                <thead>
-                    <tr>
-                                        <th><input type="checkbox" class="checkbox"></th>
-                        <th>#</th>
-                        <th>Nom d'utilisateur</th>
-                        <th>Email</th>
-                        <th>Rôle</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for u in liste_users %}
-                    <tr>
-                                        <td><input type="checkbox" class="checkbox"></td>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ u.username }}</td>
-                        <td>{{ u.email }}</td>
-                        <td>{{ u.role }}</td>
-                        <td class="table-actions">
-                            <a href="{% url 'user_edit' u.id %}" class="btn btn-muted">Modifier</a>
-                            <a href="{% url 'user_delete' u.id %}" class="btn btn-muted">Supprimer</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                                    <tr><td colspan="6">Aucun utilisateur.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                <input type="search" class="filter-input" placeholder="Filtrer..."
+                                    data-filter-for="table-annees">
+                                <table id="table-annees" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" class="checkbox"></th>
+                                            <th>#</th>
+                                            <th>Intitulé</th>
+                                            <th>Actifs</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for i in annee %}
+                                        <tr>
+                                            <td><input type="checkbox" class="checkbox"></td>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ i.annee }}</td>
+                                            <td>
+                                                {% if i.is_active %}
+                                                <span class="status-badge status-active">
+                                                    <span class="status-dot"></span> Actif
+                                                </span>
+                                                {% else %}
+                                                <span class="status-badge status-inactive">
+                                                    <span class="status-dot"></span> Inactif
+                                                </span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="table-actions">
+                                                <a href="#" onclick="modifierAnnee('{{ i.id }}', '{{ i.annee }}')"
+                                                    class="btn btn-muted">Modifier</a>
+                                                <a href=""
+                                                    class="btn btn-muted">Supprimer</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-        </div>
-    </section>
-
-    <!-- Permissions -->
-    <section class="section hidden" data-section="perms">
-        <div class="section-body">
-            <div class="form-container">
-    <form action="" method="post">
-        {% csrf_token %}
-                <div class="grid">
-                    <div class="col-6">
-                        <label for="perm_name">Nom</label>
-                        <input type="text" id="perm_name" name="perm_name" placeholder="Ex: gérer_parents" required>
                     </div>
-                    <div class="col-6">
-                        <label for="perm_user">Assigner à l'utilisateur</label>
-                        <select id="perm_user" name="perm_user">
-                            <option value="">Sélectionner</option>
-                            {% for u in liste_users %}
-                            <option value="{{ u.id }}">{{ u.username }}</option>
-            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-12 actions">
-                                    <button type="submit" class="btn-form">Ajouter</button>
-                    </div>
-                </div>
-    </form>
-            </div>
+                </section>
 
-            <div class="table-section">
-                <div class="table-container">
-                <input type="search" class="filter-input" placeholder="Filtrer..." data-filter-for="table-perms">
-                            <table id="table-perms" class="table">
-                <thead>
-                    <tr>
-                                        <th><input type="checkbox" class="checkbox"></th>
-                        <th>#</th>
-                        <th>Permission</th>
-                        <th>Utilisateur</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for p in liste_permissions %}
-                    <tr>
-                                        <td><input type="checkbox" class="checkbox"></td>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ p.nom }}</td>
-                        <td>{{ p.utilisateur.username }}</td>
-                        <td class="table-actions">
-                            <a href="{% url 'permission_delete' p.id %}" class="btn btn-muted">Retirer</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                                    <tr><td colspan="5">Aucune permission.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-                </div>
+                <!-- Frais scolaires -->
+                <section class="section hidden" data-section="frais">
+                    <div class="section-body">
+                        <div class="form-container">
+                            <form id="fraisForm" method="post">
+                                {% csrf_token %}
+                                <div class="grid">
+                                    <div class="col-6">
+                                        <input type="hidden" id="id_frais" name="id_frais" placeholder="0.00" required>
+                                        <label for="frais_montant">Montant</label>
+                                        <input type="number" step="0.01" id="frais_montant" name="frais_montant" placeholder="0.00" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="frais_classe">Applicable à (Classe)</label>
+                                        <select id="frais_classe" name="frais_classe">
+                                            <option value="">Toutes les classes</option>
+                                            {% for item in classes %}
+                                            <option {% if item.id %} selected {% endif %} value="{{ item.id }}">{{ item.classe }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    {% if user.section == "Secondaire" %}
+                                    <div class="col-6">
+                                        <label for="frais_option">Option</label>
+                                        <select id="frais_option" name="frais_option">
+                                            <option value="">Toutes les options</option>
+                                            {% for item in options %}
+                                            <option {% if item.id %} selected {% endif %} value="{{ item.id }}">{{ item.option }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    {% endif %}
+                                    <div class="col-6">
+                                        <div id="frais-success"></div>
+                                    </div>
+                                    <div class="col-12 actions">
+                                        <button type="submit" class="btn-form">Enregistrer</button>
+                                        <span class="hint">Crée ou met à jour le frais scolaire.</span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="table-section">
+                            <div class="table-container">
+                                <input type="search" class="filter-input" placeholder="Filtrer..." data-filter-for="table-frais">
+                                <table id="table-frais" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" class="checkbox"></th>
+                                            <th>#</th>
+                                            <th>Montant</th>
+                                            <th>Classe</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for f in list_frais %}
+                                        <tr>
+                                            <td><input type="checkbox" class="checkbox"></td>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ f.frais }}</td>
+                                            <td>{{ f.classe.classe|default:"Toutes" }}</td>
+                                            <td class="table-actions">
+                                                <a href="#" onclick="modifierFrais('{{ f.id }}','{{ f.frais|stringformat:"s" }}','{% if f.classe %}{{ f.classe.id }}{% else %}{% endif %}')" class="btn btn-muted">Modifier</a>
+                                                <a href="" class="btn btn-muted">Supprimer</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="7">Aucun frais scolaire.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Repartition Scolaires -->
+                <section class="section hidden" data-section="repartition">
+                    <div class="section-body">
+                        <div class="form-container">
+                            <form id="repartitionForm" method="post">
+                                {% csrf_token %}
+                                <div class="grid">
+                                    <div class="col-6">
+                                        <input type="hidden" id="id_repartition" name="id_repartition" placeholder="Ex: Minerval, Inscription" required>
+                                        <label for="repartition_motif">Motif</label>
+                                        <input type="text" id="repartition_motif" name="repartition_motif" placeholder="Ex: Minerval, Inscription" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="repartition_frais">Frais principal (Global)</label>
+                                        <select id="repartition_frais" name="repartition_frais">
+                                            <option value="">Selectionnez</option>
+                                            {% for item in list_frais %}
+                                            <option value="{{ item.id }}">{{ item.frais }} $ - {{ item.classe.classe|default:"Toutes les classes" }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <span id="message"></span>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="repartition_montant">Montant</label>
+                                        <input type="number" step="0.01" id="repartition_montant" name="repartition_montant" placeholder="0.00" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <span id="repartition-success"></span>
+                                    </div>
+                                    <div class="col-12 actions">
+                                        <button type="submit" id="submitBtn" class="btn-form">Enregistrer</button>
+                                        <span class="hint">Crée ou met à jour la répartition.</span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="table-section">
+                            <div class="table-container">
+                                <input type="search" class="filter-input" placeholder="Filtrer..." data-filter-for="table-repartition">
+                                <table id="table-repartition" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" class="checkbox"></th>
+                                            <th>#</th>
+                                            <th>Motif</th>
+                                            <th>Montant</th>
+                                            <th>Frais Lié</th>
+                                            <th>Classe</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% regroup repartition_frais by frais.classe.classe as repartition_list %}
+                                        
+                                        {% for class_group in repartition_list %}
+                                            <tr class="group-header">
+                                                <td colspan="7" style="background-color: #f8fafc; font-weight: 600; color: #475569; padding: 12px 16px; border-left: 4px solid var(--button-primary);">
+                                                    <i class="fas fa-graduation-cap" style="margin-right: 8px;"></i>
+                                                    Classe : {{ class_group.grouper|default:"Toutes les classes" }}
+                                                </td>
+                                            </tr>
+                                            {% for rep in class_group.list %}
+                                            <tr>
+                                                <td><input type="checkbox" class="checkbox"></td>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ rep.motif }}</td>
+                                                <td>{{ rep.montant }} $</td>
+                                                <td>{{ rep.frais.frais }} $</td>
+                                                <td>{{ rep.frais.classe.classe|default:"Toutes" }} {{ rep.frais.option.option|default:"" }}</td>
+                                                <td class="table-actions">
+                                                    <a href="#" onclick="modifierFraisRepartition('{{ rep.id }}','{{ rep.motif|escapejs }}','{{ rep.frais.id }}', '{{ rep.montant|stringformat:"s" }}')" class="btn btn-muted">Modifier</a>
+                                                    <a href="" class="btn btn-muted">Supprimer</a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="7" class="empty-state">
+                                                Aucune répartition configurée.
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Informations Ecole -->
+                <section class="section hidden" data-section="ecole">
+                    <div class="section-body">
+                        <h1 style="color: var(--button-primary); font-size: 28px; margin: 0 0 30px 0;">MODIFIER L'ÉTABLISSEMENT</h1>
+                        <form id="form_ecole" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="ecole-profile">
+                                <!-- Logo de l'école -->
+                                <div class="ecole-profile-picture">
+                                    <div class="ecole-logo-container" id="logo-preview">
+                                        {% if ecole.logo %}
+                                            <img src="{{ ecole.logo.url }}" alt="Logo de l'école" id="logo-img">
+                                        {% else %}
+                                            <i class="fas fa-building"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="ecole-logo-name" id="ecole-name">{{ ecole.nom }}</div>
+                                    <div class="ecole-logo-subtitle">Établissement scolaire</div>
+                                    
+                                    <input type="file" name="logo_ecole" id="logo_ecole" accept="image/*" style="display: none;">
+                                    <button type="button" class="ecole-logo-btn" onclick="document.getElementById('logo_ecole').click()">
+                                        <i class="fas fa-camera"></i> Changer le logo
+                                    </button>
+                                    <div class="ecole-logo-format">Format recommandé: 800x800px</div>
+                                </div>
+
+                                <!-- Formulaire -->
+                                <div class="ecole-profile-form">
+                                    <!-- Section Informations Générales -->
+                                    <div class="form-section">
+                                        <h3 class="form-section-title">Informations Générales</h3>
+                                        <div class="ecole-form-grid">
+                                            <div class="ecole-form-group">
+                                                <label for="nom_ecole">Nom<span class="required">*</span></label>
+                                                <input type="text" id="nom_ecole" name="nom_ecole" placeholder="Nom de l'établissement" value="{{ ecole.nom }}" required>
+                                            </div>
+                                            <div class="ecole-form-group">
+                                                <label for="adresse_ecole">Adresse<span class="required">*</span></label>
+                                                <input type="text" id="adresse_ecole" name="adresse_ecole" placeholder="Adresse" value="{{ ecole.adresse }}" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Section Identifiants -->
+                                    <div class="form-section">
+                                        <h3 class="form-section-title">Identifiants</h3>
+                                        <div class="ecole-form-grid">
+                                            <div class="ecole-form-group full-width">
+                                                <label for="email_ecole">Adresse Email<span class="required">*</span></label>
+                                                <input type="email" id="email_ecole" name="email_ecole" placeholder="Email principal" value="{{ ecole.email }}" required>
+                                            </div>
+                                            <div class="ecole-form-group full-width">
+                                                <label for="arreteministeriel_ecole">Arrêté Ministériel<span class="required">*</span></label>
+                                                <input type="text" id="arreteministeriel_ecole" name="arreteministeriel_ecole" placeholder="Référence d'arrêté" value="{{ ecole.arreteministeriel }}" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Section Détails -->
+                                    <div class="form-section">
+                                        <h3 class="form-section-title">Détails</h3>
+                                        <div class="ecole-form-grid">
+                                            <div class="ecole-form-group">
+                                                <label for="datecreation_ecole">Date de Création<span class="required">*</span></label>
+                                                <input type="date" id="datecreation_ecole" name="datecreation_ecole" value="{{ ecole.datecreation | date:'Y-m-d' }}" required>
+                                            </div>
+                                            <div class="ecole-form-group">
+                                                <label for="telephone_ecole">Numéro de Téléphone<span class="required">*</span></label>
+                                                <input type="tel" id="telephone_ecole" name="telephone_ecole" placeholder="Numéro de téléphone" value="{{ ecole.telephone }}" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% comment %} affichage de message de confirmation {% endcomment %}
+                                    <div class="ecole-form-group full-width">
+                                        <div class="alert" id="alert-message" style="display: none;">
+                                            <span id="ecole-success"></span>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- Bouton Submit -->
+                                    <div class="form-submit">
+                                        <button type="submit" class="btn-submit">Enregistrer les modifications</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Options -->
+                <section class="section hidden" data-section="options">
+                    <div class="section-body">
+                        <div class="form-container">
+                            <form id="form_option" method="post">
+                                {% csrf_token %}
+                                <div class="grid">
+                                    <input type="hidden" name="id_option" id="id_option">
+                                    <div class="col-6">
+                                        <label for="option_nom">Nom de l'option</label>
+                                        <input type="text" id="option_nom" name="option_nom"
+                                            placeholder="Littéraire, Commercial..." required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label>Statut de l'option</label>
+                                        <div class="toggle-container">
+                                            <label class="switch">
+                                                <input type="checkbox" id="is_active" name="is_active" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                            <span style="font-size: 0.9rem; color: var(--text-secondary);">Actif</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <span id="option-success"></span>
+                                    </div>
+                                    <div class="col-12 actions">
+                                        <button type="submit" class="btn-form">Enregistrer</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="table-section">
+                            <div class="table-container">
+                                <input type="search" class="filter-input" placeholder="Filtrer..."
+                                    data-filter-for="table-options">
+                                <table id="table-options" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" class="checkbox"></th>
+                                            <th>#</th>
+                                            <th>Nom</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in options %}
+                                        <tr>
+                                            <td><input type="checkbox" class="checkbox"></td>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ item.option }}</td>
+                                            <td>
+                                                {% if item.is_active %}
+                                                <span class="status-badge status-active">
+                                                    <span class="status-dot"></span> Actif
+                                                </span>
+                                                {% else %}
+                                                <span class="status-badge status-inactive">
+                                                    <span class="status-dot"></span> Inactif
+                                                </span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="table-actions">
+                                                <a href="#" class="btn btn-muted" onclick="modifierOption('{{ item.id }}', '{{ item.option }}', '{{ item.is_active }}')">Modifier</a>
+                                                <a href="" class="btn btn-muted">Supprimer</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5">Aucune option.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Classes -->
+                <section class="section hidden" data-section="classes">
+                    <div class="section-body">
+                        <div class="form-container">
+                            <form id="classeForm" method="post">
+                                {% csrf_token %}
+                                <div class="grid">
+                                    <div class="col-6">
+                                        <input type="hidden" id="id_classe" name="id_classe" placeholder="1, 2, 3 ..."
+                                            required>
+                                        <label for="classe_nom">Classes</label>
+                                        <input type="text" id="classe_nom" name="classe_nom" placeholder="1, 2, 3 ..."
+                                            required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label>Statut de la classe</label>
+                                        <div class="toggle-container">
+                                            <label class="switch">
+                                                <input type="checkbox" id="is_active_classe" name="is_active" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                            <span style="font-size: 0.9rem; color: var(--text-secondary);">Actif</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div id="classe-success"></div>
+                                    </div>
+                                    <div class="col-12 actions">
+                                        <button type="submit" class="btn-form">Enregistrer</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="table-section">
+                            <div class="table-container">
+                                <input type="search" class="filter-input" placeholder="Filtrer..."
+                                    data-filter-for="table-classes">
+                                <table id="table-classes" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" class="checkbox"></th>
+                                            <th>#</th>
+                                            <th>Nom</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in classes %}
+                                        <tr>
+                                            <td><input type="checkbox" class="checkbox"></td>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ item.classe }}</td>
+                                            <td class="table-actions">
+                                                <a href="#" onclick="modifierClasse('{{ item.id }}', '{{ item.classe }}')"
+                                                    class="btn btn-muted">Modifier</a>
+                                                    <a href="" class="btn btn-muted">Supprimer</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="6">Aucune classe.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Utilisateurs -->
+                <section class="section hidden" data-section="users">
+                    <div class="section-body">
+                        <div class="form-container">
+                            <form id="userForm" method="post">
+                                {% csrf_token %}
+                                <div class="grid">
+                                    <div class="col-4">
+                                        <label for="user_nom">Nom</label>
+                                        <input type="text" id="user_nom" name="user_nom" placeholder="ex: jdoe" required>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="user_username">Nom d'utilisateur</label>
+                                        <input type="text" id="user_username" name="user_username"
+                                            placeholder="ex: jdoe" required>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="user_email">Email</label>
+                                        <input type="email" id="user_email" name="user_email"
+                                            placeholder="ex: jdoe@mail.com" required>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="user_role">Rôle</label>
+                                        <select id="user_role" name="user_role">
+                                            {% for role in roles %}
+                                            <option value="{{ role }}">{{ role }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="user_section">Section</label>
+                                        <select id="user_section" name="user_section">
+                                            {% for section in sections %}
+                                            <option value="{{ section.id }}">{{ section.section }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="user_password">Mot de passe</label>
+                                        <input type="password" id="user_password" name="user_password" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <div id="user-success"></div>
+                                    </div>
+                                    <div class="col-12 actions">
+                                        <button type="submit" class="btn-form">Créer l'utilisateur</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="table-section">
+                            <div class="table-container">
+                                <input type="search" class="filter-input" placeholder="Filtrer..."
+                                    data-filter-for="table-users">
+                                <table id="table-users" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" class="checkbox"></th>
+                                            <th>#</th>
+                                            <th>Nom d'utilisateur</th>
+                                            <th>Email</th>
+                                            <th>Rôle</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for u in users %}
+                                        <tr>
+                                            <td><input type="checkbox" class="checkbox"></td>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ u.username }}</td>
+                                            <td>{{ u.email }}</td>
+                                            <td>{{ u.role }}</td>
+                                            <td>
+                                                {% if u.is_active %}
+                                                <span class="status-badge status-active">
+                                                    <span class="status-dot"></span> Actif
+                                                </span>
+                                                {% else %}
+                                                <span class="status-badge status-inactive">
+                                                    <span class="status-dot"></span> Inactif
+                                                </span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="table-actions">
+                                                <a href="" class="btn btn-muted">Modifier</a>
+                                                <a href=""
+                                                    class="btn btn-muted">Supprimer</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="6">Aucun utilisateur.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sections -->
+                <section class="section hidden" data-section="sections">
+                    <div class="section-body">
+                        <div class="form-container">
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <div class="grid">
+                                    <div class="col-6">
+                                        <label for="perm_name">Nom</label>
+                                        <input type="text" id="perm_name" name="perm_name"
+                                            placeholder="Ex: gérer_parents" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="perm_name">Nom</label>
+                                        <select id="perm_user" name="perm_user">
+                                            <option value="">Sélectionner</option>
+                                            {% for u in section %}
+                                            <option value="{{ u }}">{{ u }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-12 actions">
+                                        <button type="submit" class="btn-form">Ajouter</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="table-section">
+                            <div class="table-container">
+                                <input type="search" class="filter-input" placeholder="Filtrer..."
+                                    data-filter-for="table-perms">
+                                <table id="table-perms" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" class="checkbox"></th>
+                                            <th>#</th>
+                                            <th>Permission</th>
+                                            <th>Utilisateur</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for p in liste_permissions %}
+                                        <tr>
+                                            <td><input type="checkbox" class="checkbox"></td>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ p.nom }}</td>
+                                            <td>{{ p.utilisateur.username }}</td>
+                                            <td class="table-actions">
+                                                <a href="{% url 'permission_delete' p.id %}"
+                                                    class="btn btn-muted">Retirer</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5">Aucune permission.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
             </div>
         </div>
-    </section>
+    </div>
 
-            </div>
-        </div>
-</div>
+    <script>
+
+        function modifierOption(id, nom, is_active){
+            document.getElementById("id_option").value = id;
+            document.getElementById("option_nom").value = nom;
+            // Pour une checkbox, on utilise .checked. Le paramètre is_active arrive comme 'True' ou 'False'
+            const activeStatus = document.getElementById("is_active");
+            activeStatus.checked = (is_active === 'True');
+            updateToggleLabel(activeStatus);
+        }
+
+        function updateToggleLabel(checkbox) {
+            const labelSpan = checkbox.closest('.toggle-container').querySelector('span');
+            if (checkbox.checked) {
+                labelSpan.textContent = "Actif";
+                labelSpan.style.color = "#059669";
+            } else {
+                labelSpan.textContent = "Inactif";
+                labelSpan.style.color = "#dc2626";
+            }
+        }
+
+        document.getElementById('is_active').addEventListener('change', function() {
+            updateToggleLabel(this);
+        });
+
+        function modifierAnnee(id, annee){
+            document.getElementById("id_annee").value = id;
+            document.getElementById("annee_nom").value = annee;
+        }
+
+        function modifierClasse(id, classe){
+            document.getElementById("id_classe").value = id;
+            document.getElementById("classe_nom").value = classe;
+        }
+
+        function modifierFrais(id, frais, classe){
+            document.getElementById("id_frais").value = id;
+            document.getElementById("frais_montant").value = frais;
+            document.getElementById("frais_classe").value = classe;
+        }
+
+        function modifierFraisRepartition(id, motif, frais, montant){
+            document.getElementById("id_repartition").value = id;
+            document.getElementById("repartition_motif").value = motif;
+            document.getElementById("repartition_frais").value = frais;
+            document.getElementById("repartition_montant").value = montant;
+            // Stocker le montant initial pour le calcul du reste en mode édition
+            document.getElementById("repartition_montant").dataset.initial = montant;
+            
+            // Déclencher manuellement la vérification du solde
+            checkRepartitionBalance();
+        }
+
+        function checkRepartitionBalance() {
+            const fraisId = document.getElementById("repartition_frais").value;
+            const idRep = document.getElementById("id_repartition").value;
+            const msgElement = document.getElementById("message");
+            const repartitionMontantInput = document.getElementById("repartition_montant");
+
+            if (!fraisId) {
+                msgElement.innerHTML = "";
+                return;
+            }
+
+            fetch(`/finance/recherche_frais_repartition/?frais=${fraisId}`)
+                .then(response => response.json())
+                .then(data => {
+                    let resteBase = parseFloat(data.reste) || 0;
+                    let initialAmount = 0;
+
+                    // Si on est en train de modifier, on rajoute le montant actuel de cette répartition au reste
+                    if (idRep) {
+                        initialAmount = parseFloat(repartitionMontantInput.dataset.initial) || 0;
+                    }
+
+                    const resteTotal = resteBase + initialAmount;
+                    msgElement.dataset.reste = resteTotal;
+                    msgElement.innerHTML = "Reste à répartir : " + resteTotal + " FC";
+                    msgElement.style.color = resteTotal <= 0 ? "#ef4444" : "#10b981";
+                    msgElement.style.display = "block";
+                    msgElement.style.whiteSpace = "nowrap";
+                    msgElement.style.marginBottom = "10px";
+                    msgElement.style.fontSize = "13px";
+                    msgElement.style.fontWeight = "500";
+
+                    validateRepartitionAmount();
+                });
+        }
+
+        function validateRepartitionAmount() {
+            const montantInput = document.getElementById("repartition_montant");
+            const montant = parseFloat(montantInput.value) || 0;
+            const msgElement = document.getElementById("message");
+            const reste = parseFloat(msgElement.dataset.reste) || 0;
+            const submitBtn = document.getElementById("submitBtn");
+
+            if (montant > 0 && montant <= (reste + 0.01)) { // +0.01 for float precision
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = "1";
+                submitBtn.style.cursor = "pointer";
+                msgElement.style.color = "#10b981";
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = "0.6";
+                submitBtn.style.cursor = "not-allowed";
+                if (montant > reste) {
+                    msgElement.innerHTML = "Attention : Montant trop élevé ! Reste max : " + reste + " FC";
+                    msgElement.style.color = "#ef4444";
+                }
+            }
+        }
+
+        document.getElementById("repartition_frais").addEventListener("change", checkRepartitionBalance);
+        document.getElementById("repartition_montant").addEventListener("input", validateRepartitionAmount);
+
+        document.getElementById("repartitionForm").addEventListener("submit", function(e){
+            e.preventDefault();
+            let form = this;
+            let formData = new FormData(form);
+
+            fetch("/finance/create_repartition", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let message = document.getElementById("repartition-success");
+                if(data.success){
+                    message.style.color = "#10b981";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "repartition";
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    message.style.color = "#ef4444";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "repartition";
+                        window.location.reload();
+                    }, 1500);  
+                }
+            })
+            .catch(error => {
+                console.error("Erreur:", error);
+                document.getElementById("repartition-success").innerHTML = "Une erreur est survenue.";
+            });
+        })
+
+        document.getElementById("fraisForm").addEventListener("submit", function(e){
+            e.preventDefault();
+            let form = this;
+            let formData = new FormData(form);
+
+            fetch("/finance/create_frais", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let message = document.getElementById("frais-success");
+                if(data.success){
+                    message.style.color = "#10b981";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "frais";
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    message.style.color = "#ef4444";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "frais";
+                        window.location.reload();
+                    }, 1500);  
+                }
+            })
+            .catch(error => {
+                console.error("Erreur:", error);
+                document.getElementById("frais-success").innerHTML = "Une erreur est survenue.";
+            });
+        })
+
+        document.getElementById("userForm").addEventListener("submit", function(e){
+            e.preventDefault();
+            let form = this;
+            let formData = new FormData(form);
+
+            fetch("{% url 'nouveau_utilisateur' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let message = document.getElementById("user-success");
+                if(data.success){
+                    message.style.color = "#10b981";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "users";
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    message.style.color = "#ef4444";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "users";
+                        window.location.reload();
+                    }, 1500);  
+                }
+            })
+            .catch(error => {
+                console.error("Erreur:", error);
+                document.getElementById("user-success").innerHTML = "Une erreur est survenue.";
+            });
+        })
+
+        document.getElementById("classeForm").addEventListener("submit", function(e){
+            e.preventDefault();
+            let form = this;
+            let formData = new FormData(form);
+
+            fetch("{% url 'nouvelle_classe' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let message = document.getElementById("classe-success");
+                if(data.success){
+                    message.style.color = "#10b981";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "classes";
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    message.style.color = "#ef4444";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "classes";
+                        window.location.reload();
+                    }, 1000);  
+                }
+            })
+            .catch(error => {
+                console.error("Erreur:", error);
+                document.getElementById("classe-success").innerHTML = "Une erreur est survenue.";
+            });
+        })
+
+        document.getElementById("anneeForm").addEventListener("submit", function(e){
+            e.preventDefault();
+            let form = this;
+            let formData = new FormData(form);
+
+            fetch("{% url 'nouvelle_annee' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let message = document.getElementById("annee-success");
+                if(data.success){
+                    message.style.color = "#10b981";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "annees";
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    message.style.color = "#ef4444";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "annees";
+                        window.location.reload();
+                    }, 1500);  
+                }
+            })
+            .catch(error => {
+                console.error("Erreur:", error);
+                document.getElementById("annee-success").innerHTML = "Une erreur est survenue.";
+            });
+        })
+
+        document.getElementById("form_ecole").addEventListener("submit", function(e){
+            e.preventDefault();
+            let form = this;
+            let formData = new FormData(form);
+
+            fetch("{% url 'update_ecole' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let message = document.getElementById("ecole-success");
+                let alertDiv = document.getElementById("alert-message");
+                if(data.success){
+                    alertDiv.style.display = "block";
+                    message.style.color = "#10b981";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "ecole";
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    alertDiv.style.display = "block";
+                    message.style.color = "#ef4444";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "ecole";
+                        window.location.reload();
+                    }, 1500);  
+                }
+            })
+            .catch(error => {
+                console.error("Erreur:", error);
+                document.getElementById("ecole-success").innerHTML = "Une erreur est survenue.";
+            });
+        })
+
+        document.getElementById("form_option").addEventListener("submit", function(e){
+            e.preventDefault();
+            let form = this;
+            let formData = new FormData(form);
+
+            fetch("{% url 'nouvelle_option' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let message = document.getElementById("option-success");
+                let alertDiv = document.getElementById("alert-message");
+                if(data.success){
+                    alertDiv.style.display = "block";
+                    message.style.color = "#10b981";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "options";
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    alertDiv.style.display = "block";
+                    message.style.color = "#ef4444";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "options";
+                        window.location.reload();
+                    }, 1500);  
+                }
+            })
+            .catch(error => {
+                console.error("Erreur:", error);
+                document.getElementById("option-success").innerHTML = "Une erreur est survenue.";
+            });
+        })
+                
+    </script>
 </body>
+
 </html>

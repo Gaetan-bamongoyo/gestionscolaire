@@ -1,5 +1,5 @@
 from django.db import models
-from scolaireapp.models import Classes, AnneeAcademiques, Eleves
+from scolaireapp.models import *
 
 # Create your models here.
 
@@ -21,7 +21,7 @@ class Enseignants(models.Model):
 class Affectations(models.Model):
     enseignant = models.ForeignKey(Enseignants, on_delete=models.CASCADE)
     cours = models.ForeignKey(Cours, on_delete=models.CASCADE)
-    annee = models.ForeignKey(AnneeAcademiques, on_delete=models.CASCADE)
+    annee = models.ForeignKey(AnneeScolaires, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
 
 class Ponderations(models.Model):
@@ -29,7 +29,7 @@ class Ponderations(models.Model):
     eleve = models.ForeignKey(Eleves, on_delete=models.CASCADE)
     cours = models.ForeignKey(Cours, on_delete=models.CASCADE)
     periode = models.CharField(max_length=50) 
-    annee = models.ForeignKey(AnneeAcademiques, on_delete=models.CASCADE)
+    annee = models.ForeignKey(AnneeScolaires, on_delete=models.CASCADE)
 
 
 

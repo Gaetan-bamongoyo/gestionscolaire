@@ -5,7 +5,7 @@ from scolaireapp.models import *
 # Create your views here.
 def homePage(request):
     get_classe = Classes.objects.all()
-    get_annee = AnneeAcademiques.objects.all()
+    get_annee = AnneeScolaires.objects.all()
     get_cours = Cours.objects.all()
     get_enseignant = Enseignants.objects.all()
     get_cours_affecter = []

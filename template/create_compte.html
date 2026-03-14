@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Multi-étapes</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Importation d'une police élégante -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-body: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --white: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--white);
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h1 {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .form-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Steps Progress Tracker */
+        .steps-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .step-col {
+            text-align: center;
+            flex: 1;
+            z-index: 2;
+        }
+
+        .step-col small {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .step-col span {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .step-col.active span {
+            color: var(--primary);
+        }
+
+        .progress-bar-bg {
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            height: 4px;
+            width: 100%;
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 33.33%;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: width 0.4s ease;
+        }
+
+        /* Forms visibility */
+        .form-step {
+            display: none;
+            animation: slideIn 0.4s ease forwards;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Inputs Style */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-next,
+        .btn-submit {
+            background: var(--primary);
+            color: white;
+            flex: 2;
+        }
+
+        .btn-prev {
+            background: #f1f5f9;
+            color: var(--text-muted);
+            flex: 1;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .btn-submit {
+            background: #10b981;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 500px) {
+            .grid-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="form-header">
+            <h1>Inscription</h1>
+            <p>Veuillez remplir les informations ci-dessous</p>
+        </div>
+
+        <!-- Barre de progression -->
+        <div class="steps-container">
+            <div class="step-col active" id="step-col-1">
+                <small>Étape 1</small>
+                <span>Utilisateur</span>
+            </div>
+            <div class="step-col" id="step-col-2">
+                <small>Étape 2</small>
+                <span>École</span>
+            </div>
+            <div class="step-col" id="step-col-3">
+                <small>Étape 3</small>
+                <span>Section</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <form action="{% url 'create_user' %}" method="post">
+            {% csrf_token %}
+            <!-- ÉTAPE 1 : UTILISATEUR -->
+            <div class="form-step active" id="step-1">
+                <div class="input-group">
+                    <label>Nom d'utilisateur</label>
+                    <input type="text" id="username" placeholder="Pseudo" required name="username">
+                </div>
+                <div class="input-group">
+                    <label>Mot de passe</label>
+                    <input type="password" id="password" placeholder="••••••••" required name="password">
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-next">Suivant →</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 2 : ÉCOLE -->
+            <div class="form-step" id="step-2">
+                <div class="grid-inputs">
+                    <div class="input-group">
+                        <label>Nom de l'école</label>
+                        <input type="text" id="schoolName" placeholder="Ex: Collège Horizon" name="nom_ecole">
+                    </div>
+                    <div class="input-group">
+                        <label>Adresse</label>
+                        <input type="text" id="address" placeholder="N° / Rue / Quartier" name="adresse_ecole">
+                    </div>
+                    <div class="input-group">
+                        <label>Téléphone</label>
+                        <input type="tel" id="phone" placeholder="+243 ..." name="telephone_ecole">
+                    </div>
+                    <div class="input-group">
+                        <label>Email École</label>
+                        <input type="email" id="schoolEmail" placeholder="contact@ecole.com" name="email_ecole">
+                    </div>
+                    <div class="input-group">
+                        <label>Date de création</label>
+                        <input type="date" id="creationDate" name="datecreation_ecole">
+                    </div>
+                    <div class="input-group">
+                        <label>Arrêté Ministériel (N°)</label>
+                        <input type="text" id="ministerialDecree" placeholder="Ex: 001/MINEPST/2023" name="arreteministeriel_ecole">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-prev">← Précédent</button>
+                    <button type="button" class="btn btn-next">Suivant →</button>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 3 : SECTION -->
+            <div class="form-step" id="step-3">
+                <div class="input-group">
+                    <label>Section / Filière</label>
+                    <select id="section" name="section">
+                        <option value="">Sélectionnez une section</option>
+                        <option value="Primaire">Primaire</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-prev">← Précédent</button>
+                    <button type="submit" class="btn btn-submit">Enregistrer les données</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const multiStepForm = document.getElementById("multiStepForm");
+            const nextBtns = document.querySelectorAll(".btn-next");
+            const prevBtns = document.querySelectorAll(".btn-prev");
+            const progressFill = document.getElementById("progress-fill");
+            const formSteps = document.querySelectorAll(".form-step");
+            const stepCols = document.querySelectorAll(".step-col");
+
+            let currentStep = 0;
+
+            // Fonction pour mettre à jour l'affichage
+            function updateUI() {
+                // 1. Afficher/Masquer les étapes
+                formSteps.forEach((step, index) => {
+                    if (index === currentStep) {
+                        step.classList.add("active");
+                    } else {
+                        step.classList.remove("active");
+                    }
+                });
+
+                // 2. Mettre à jour les colonnes de progression (couleur du texte)
+                stepCols.forEach((col, index) => {
+                    if (index <= currentStep) {
+                        col.classList.add("active");
+                    } else {
+                        col.classList.remove("active");
+                    }
+                });
+
+                // 3. Calculer et appliquer la largeur de la barre de progression
+                // Étape 0 -> 33%, Étape 1 -> 66%, Étape 2 -> 100%
+                const progressPercentage = ((currentStep + 1) / formSteps.length) * 100;
+                progressFill.style.width = progressPercentage + "%";
+
+                console.log("Étape actuelle :", currentStep); // Pour déboguer dans la console
+            }
+
+            // Gestion du bouton "Suivant"
+            nextBtns.forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    // Validation simple : vérifie si les inputs de l'étape actuelle sont valides
+                    const inputs = formSteps[currentStep].querySelectorAll("input, select");
+                    let allValid = true;
+
+                    inputs.forEach(input => {
+                        if (input.hasAttribute("required") && !input.value.trim()) {
+                            input.style.borderColor = "red"; // Marque l'erreur en rouge
+                            allValid = false;
+                        } else {
+                            input.style.borderColor = "#e2e8f0"; // Réinitialise la couleur
+                        }
+                    });
+
+                    if (allValid) {
+                        if (currentStep < formSteps.length - 1) {
+                            currentStep++;
+                            updateUI();
+                        }
+                    } else {
+                        alert("Veuillez remplir tous les champs obligatoires.");
+                    }
+                });
+            });
+
+            // Gestion du bouton "Précédent"
+            prevBtns.forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    if (currentStep > 0) {
+                        currentStep--;
+                        updateUI();
+                    }
+                });
+            });
+
+            // Soumission finale
+            multiStepForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                alert("Succès ! Formulaire enregistré.");
+                console.log("Données prêtes à être envoyées au serveur.");
+            });
+
+            // Initialisation au chargement
+            updateUI();
+        });
+    </script>
+</body>
+
+</html>

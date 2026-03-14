@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Utilisateur</title>
+    <title>Tableau de bord</title>
+
     <!-- Police moderne -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <style>
-        /* --- Variables de couleurs --- */
         :root {
-            --primary-blue: #1e40af; /* Bleu foncé */
-            --primary-light: #3b82f6; /* Bleu clair */
-            --gradient-start: #1e3a8a;
-            --gradient-end: #2563eb;
-            --text-dark: #1f2937;
-            --text-white: #ffffff;
-            --bg-color: #f3f4f6;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-soft: #dbeafe;
+            --bg: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-dark: #111827;
+            --text-muted: #6b7280;
+            --danger: #ef4444;
         }
 
         * {
@@ -26,190 +31,927 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            overflow: hidden;
-        }
-
-        /* --- En-tête (User Info) --- */
-        header {
-            padding: 25px 40px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
-
-        .user-info {
-            font-size: 1.1rem;
-            color: var(--primary-blue);
-            font-weight: 600;
-            background: white;
-            padding: 10px 25px;
-            border-radius: 50px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .user-info:hover {
-            transform: translateY(-2px);
-        }
-
-        .user-info span {
+            background: radial-gradient(circle at top left, #eff6ff 0, #e5e7eb 40%, #f9fafb 100%);
             color: var(--text-dark);
-            font-weight: 400;
+            min-height: 100vh;
+            display: flex;
         }
 
-        /* --- Conteneur Principal --- */
-        main {
+        /* --- Layout principal --- */
+        .layout {
             display: flex;
-            flex-direction: column;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* --- Bouton hamburger (masqué par défaut) --- */
+        .menu-toggle {
+            display: none;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            flex-grow: 1;
-            padding: 0 20px;
-        }
-
-        .menu-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 100%;
-            max-width: 400px;
-            animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-
-        /* --- Styles des Liens (Boutons) --- */
-        .menu-link {
-            display: block; /* Important pour que le lien prenne toute la largeur */
-            position: relative;
-            text-align: center;
-            text-decoration: none;
-            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
-            color: var(--text-white);
-            padding: 20px 0;
-            font-size: 1.25rem;
+            width: 44px;
+            height: 44px;
+            border: none;
             border-radius: 12px;
-            box-shadow: 0 10px 20px -5px rgba(30, 64, 175, 0.25);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden; /* Pour l'effet Ripple */
-            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: background 0.2s, transform 0.15s;
         }
 
-        /* Effet de survol */
-        .menu-link:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(30, 64, 175, 0.35);
-            filter: brightness(110%);
+        .menu-toggle:hover {
+            background: #fff;
+            transform: scale(1.02);
         }
 
-        /* Effet de clic */
-        .menu-link:active {
+        .menu-toggle:active {
             transform: scale(0.98);
         }
 
-        /* Style spécifique pour Déconnexion (optionnel : un peu plus sombre) */
-        .menu-link.logout {
-            background: linear-gradient(90deg, #172554, #1e3a8a);
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 998;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        /* --- Pied de page --- */
-        footer {
-            padding: 20px;
-            text-align: center;
-            color: #6b7280;
-            font-size: 0.85rem;
-            opacity: 0.8;
+        .sidebar-overlay.active {
+            opacity: 1;
         }
 
-        footer strong {
-            color: var(--primary-blue);
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: rgba(15, 23, 42, 0.98);
+            color: #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 20px;
+            position: relative;
+            overflow: hidden;
+            overflow-y: auto;
         }
 
-        /* --- Animations --- */
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Effet d'onde (Ripple) */
-        .ripple {
+        .sidebar::before {
+            content: "";
             position: absolute;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 50%;
-            transform: scale(0);
-            animation: ripple-anim 0.6s linear;
+            inset: 0;
+            background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.6), transparent 55%);
+            opacity: 0.4;
             pointer-events: none;
         }
 
-        @keyframes ripple-anim {
-            to {
-                transform: scale(4);
-                opacity: 0;
+        .sidebar-header {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .logo-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f9fafb;
+            font-size: 1.1rem;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.45);
+        }
+
+        .school-name {
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .school-name span {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 400;
+            color: #9ca3af;
+        }
+
+        .sidebar-menu {
+            position: relative;
+            z-index: 1;
+            margin-top: 10px;
+            flex: 1;
+        }
+
+        .menu-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #9ca3af;
+            margin-bottom: 12px;
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #e5e7eb;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+
+        .menu-item a::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #3b82f6, #a855f7);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .menu-item a span.icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            background: rgba(31, 41, 55, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+
+        .menu-item a span.label {
+            flex: 1;
+        }
+
+        .menu-item a span.chevron {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .menu-item a span.icon i {
+            font-size: 0.85rem;
+        }
+
+        .menu-item a:hover {
+            background: rgba(31, 41, 55, 0.85);
+            transform: translateY(-1px);
+        }
+
+        .menu-item a:hover::before {
+            opacity: 1;
+        }
+
+        .menu-item.logout a {
+            color: #fecaca;
+        }
+
+        .menu-item.logout a span.icon {
+            background: rgba(127, 29, 29, 0.9);
+        }
+
+        .menu-item.logout a:hover {
+            background: rgba(127, 29, 29, 0.65);
+        }
+
+        .sidebar-footer {
+            position: relative;
+            z-index: 1;
+            margin-top: 24px;
+            font-size: 0.73rem;
+            color: #9ca3af;
+            text-align: left;
+        }
+
+        .sidebar-footer strong {
+            color: #e5e7eb;
+        }
+
+        /* --- Contenu principal --- */
+        .main {
+            flex: 1;
+            padding: 24px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-title span.badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+            font-weight: 500;
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #ffffff;
+            box-shadow: 0 6px 16px rgba(148, 163, 184, 0.25);
+            font-size: 0.85rem;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #3b82f6, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f9fafb;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .user-info-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .user-info-text span.name {
+            font-weight: 500;
+        }
+
+        .user-info-text span.role {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* --- Grille du tableau de bord --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+            gap: 18px;
+            margin-top: 8px;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 18px;
+            padding: 18px 20px;
+            box-shadow: 0 18px 35px rgba(15, 23, 42, 0.08);
+            border: 1px solid rgba(209, 213, 219, 0.6);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .card-title {
+            font-size: 0.98rem;
+            font-weight: 600;
+        }
+
+        .card-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .pill {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            background: var(--primary-soft);
+            color: var(--primary-dark);
+        }
+
+        /* --- Carte de bienvenue + actions --- */
+        .welcome-text {
+            margin-bottom: 16px;
+        }
+
+        .welcome-text h2 {
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .welcome-text p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .quick-action {
+            position: relative;
+            padding: 12px 12px;
+            border-radius: 14px;
+            background: #f9fafb;
+            border: 1px solid rgba(209, 213, 219, 0.8);
+            font-size: 0.84rem;
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(148, 163, 184, 0.25);
+            border-color: rgba(37, 99, 235, 0.6);
+        }
+
+        .quick-action strong {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .quick-action strong i {
+            font-size: 1rem;
+            color: var(--primary);
+            width: 20px;
+        }
+
+        .quick-action span {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        /* --- Stats --- */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .stat-card {
+            padding: 10px 10px;
+            border-radius: 14px;
+            background: #f9fafb;
+            border: 1px dashed rgba(209, 213, 219, 0.9);
+            font-size: 0.78rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        /* --- Panneau latéral (droite) --- */
+        .info-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 6px;
+            font-size: 0.82rem;
+        }
+
+        .info-item {
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: #f9fafb;
+            border: 1px solid rgba(229, 231, 235, 0.9);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .info-item span.value,
+        .info-item span.chip {
+            text-align: right;
+            word-break: break-word;
+        }
+
+        .info-item span.label {
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-item span.label i {
+            color: var(--primary);
+            font-size: 0.85rem;
+            width: 18px;
+        }
+
+        .info-item span.value {
+            font-weight: 500;
+        }
+
+        .info-item span.chip {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: rgba(34, 197, 94, 0.08);
+            color: #16a34a;
+        }
+
+        .info-item span.chip.red {
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--danger);
+        }
+
+        .hint-text {
+            margin-top: 10px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             }
         }
 
-        /* Responsive Mobile */
-        @media (max-width: 480px) {
-            header {
-                justify-content: center;
+        @media (max-width: 900px) {
+            .menu-toggle {
+                display: flex;
             }
-            .menu-link {
-                padding: 16px 0;
+
+            .sidebar-overlay {
+                display: block;
+                pointer-events: none;
+            }
+
+            .sidebar-overlay.active {
+                pointer-events: auto;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                z-index: 999;
+                width: 280px;
+                min-width: 280px;
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-header {
+                margin-bottom: 24px;
+            }
+
+            .main {
+                padding: 16px 18px 24px;
+                width: 100%;
+            }
+
+            .card {
+                padding: 16px 18px;
+            }
+
+            .card-header {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .page-title {
+                font-size: 1.15rem;
+                flex-wrap: wrap;
+            }
+
+            .page-title .badge {
+                font-size: 0.65rem;
+                padding: 3px 8px;
+            }
+
+            .school-name {
+                font-size: 0.92rem;
+            }
+
+            .school-name span {
+                font-size: 0.72rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main {
+                padding: 14px 16px 20px;
+            }
+
+            .top-bar {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .page-title {
+                font-size: 1.05rem;
+            }
+
+            .user-pill {
+                padding: 8px 14px;
+                font-size: 0.82rem;
+            }
+
+            .user-info-text span.role {
+                font-size: 0.65rem;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-action {
+                padding: 14px 16px;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                flex-direction: row;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 14px;
+            }
+
+            .stat-card .stat-icon {
+                margin-bottom: 0;
+                font-size: 1.2rem;
+            }
+
+            .stat-card .stat-value {
                 font-size: 1.1rem;
             }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .info-item span.value,
+            .info-item span.chip {
+                text-align: left;
+            }
+
+            .card {
+                padding: 14px 16px;
+            }
+
+            .card-header {
+                margin-bottom: 12px;
+            }
+
+            .card-title {
+                font-size: 0.92rem;
+            }
+
+            .card-subtitle {
+                font-size: 0.75rem;
+            }
+
+            .welcome-text h2 {
+                font-size: 1rem;
+            }
+
+            .welcome-text p {
+                font-size: 0.82rem;
+            }
+
+            .hint-text {
+                font-size: 0.72rem;
+            }
+
+            .hint-text .mobile-hide {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main {
+                padding: 12px 14px 18px;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .page-title {
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .user-pill {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-width: 100%;
+            }
+        }
+
+        /* Prévention du scroll du body quand le menu mobile est ouvert */
+        body.menu-open {
+            overflow: hidden;
         }
     </style>
 </head>
+
 <body>
+    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-circle">
+                    {{ user.ecole.nom|first|upper }}
+                </div>
+                <div class="school-name">
+                    {{ user.ecole.nom }}
+                    <span>Tableau de bord scolaire</span>
+                </div>
+            </div>
+        
+            <nav class="sidebar-menu">
+                <div class="menu-title">Navigation</div>
+                <ul class="menu-list">
+                    {% if user.role == "super-admin" %}
+                    <li class="menu-item">
+                        <a href="{% url 'classe' %}">
+                            <span class="icon"><i class="fas fa-pen-to-square"></i></span>
+                            <span class="label">Inscriptions</span>
+                            <span class="chevron"><i class="fas fa-chevron-right"></i></span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{% url 'cours' %}">
+                            <span class="icon"><i class="fas fa-chart-line"></i></span>
+                            <span class="label">Gestion des points</span>
+                            <span class="chevron"><i class="fas fa-chevron-right"></i></span>
+                        </a>
+                    </li>
+                    {% elif user.role == "comptable" %}
+                    <li class="menu-item">
+                        <a href="{% url 'comptabilite' %}">
+                            <span class="icon"><i class="fas fa-money-bill-1"></i></span>
+                            <span class="label">Comptabilite</span>
+                            <span class="chevron"><i class="fas fa-chevron-right"></i></span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="menu-item logout">
+                        <a href="{% url 'logout' %}">
+                            <span class="icon"><i class="fas fa-right-from-bracket"></i></span>
+                            <span class="label">Déconnexion</span>
+                            <span class="chevron"><i class="fas fa-chevron-right"></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
 
-    <!-- Header -->
-    <header>
-        <div class="user-info">
-            User : <span>{{user.username}}</span>
-        </div>
-    </header>
+            <div class="sidebar-footer">
+                <div>copyright 2025 || Design by <strong>Helpme</strong></div>
+            </div>
+        </aside>
 
-    <!-- Menu Principal -->
-    <main>
-        <div class="menu-container">
-            <!-- Remplacez le '#' par vos vrais liens (ex: inscription.html) -->
-            <a href="{% url 'classe' %}" class="menu-link">Inscription</a>
-            <a href="{% url 'cours' %}" class="menu-link">Gestion point</a>
-            <a href="{% url 'logout' %}" class="menu-link logout">Deconnexion</a>
-        </div>
-    </main>
+        <!-- CONTENU PRINCIPAL -->
+        <main class="main">
+            <div class="top-bar">
+                <button type="button" class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="page-title">
+                    Tableau de bord
+                    <span class="badge">Vue d’ensemble</span>
+                </div>
+                <div class="user-pill">
+                    <div class="user-avatar">
+                        {{ user.username|first|upper }}
+                    </div>
+                    <div class="user-info-text">
+                        <span class="name">{{ user.username }}</span>
+                        <span class="role">{{ section.section }}</span>
+                    </div>
+                </div>
+            </div>
 
-    <!-- Footer -->
-    <footer>
-        <p>copyright 2025 || Design by <strong>Helpme</strong></p>
-    </footer>
+            <section class="dashboard-grid">
+                <!-- Colonne principale -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Bienvenue sur votre espace</div>
+                            <div class="card-subtitle">
+                                Gérez facilement les élèves, classes et résultats.
+                            </div>
+                        </div>
+                        <span class="pill">Actif</span>
+                    </div>
+
+                    <div class="welcome-text">
+                        <h2>Que souhaitez-vous faire maintenant&nbsp;?</h2>
+                        <p>
+                            Accédez rapidement aux principales fonctionnalités de votre établissement.
+                        </p>
+                    </div>
+
+                    <div class="quick-actions">
+                        <a href="{% url 'classe' %}" class="quick-action">
+                            <strong><i class="fas fa-user-plus"></i> Nouvelle inscription</strong>
+                            <span>Créer ou mettre à jour le dossier d’un élève.</span>
+                        </a>
+                        <a href="{% url 'cours' %}" class="quick-action">
+                            <strong><i class="fas fa-pen-clip"></i> Encoder des notes</strong>
+                            <span>Enregistrer les points des évaluations récentes.</span>
+                        </a>
+                        <a href="{% url 'cours' %}" class="quick-action">
+                            <strong><i class="fas fa-file-lines"></i> Consulter les bulletins</strong>
+                            <span>Visualiser les moyennes et résultats par classe.</span>
+                    </a>
+                    <a href="{% url 'setting' %}" class="quick-action">
+                        <strong><i class="fas fa-gear"></i> Paramètres</strong>
+                        <span>Configurer années, options, classes et utilisateurs.</span>
+                        </a>
+                    </div>
+
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <span class="stat-icon"><i class="fas fa-user-graduate"></i></span>
+                            <span class="stat-label">Élèves</span>
+                            <span class="stat-value">—</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon"><i class="fas fa-chalkboard-user"></i></span>
+                            <span class="stat-label">Classes</span>
+                            <span class="stat-value">—</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon"><i class="fas fa-book"></i></span>
+                            <span class="stat-label">Cours</span>
+                            <span class="stat-value">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Colonne latérale droite -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Informations compte</div>
+                            <div class="card-subtitle">Récapitulatif de votre établissement</div>
+                        </div>
+                    </div>
+
+                    <ul class="info-list">
+                        <li class="info-item">
+                            <span class="label"><i class="fas fa-school"></i> École</span>
+                            <span class="value">{{ user.ecole.nom }}</span>
+                        </li>
+                        <li class="info-item">
+                            <span class="label"><i class="fas fa-circle-check"></i> Statut du compte</span>
+                            <span class="chip">Actif</span>
+                        </li>
+                        {% if annee %}
+                        <li class="info-item">
+                            <span class="label"><i class="fas fa-calendar"></i> Année scolaire</span>
+                            <span class="value">{{ annee.annee }}</span>
+                        </li>
+                        {% else %}
+                        <li class="info-item">
+                            <span class="label"><i class="fas fa-calendar"></i> Année scolaire</span>
+                            <span class="value">Definir</span>
+                        </li>
+                        {% endif %}
+                        <li class="info-item">
+                            <span class="label"><i class="fas fa-clock"></i> Dernière connexion</span>
+                            <span class="value">—</span>
+                        </li>
+                        <li class="info-item">
+                            <span class="label"><i class="fas fa-shield-halved"></i> Sécurité</span>
+                            <span class="chip red">Pensez à changer le mot de passe</span>
+                        </li>
+                    </ul>
+
+                    <p class="hint-text">
+                        Utilisez le menu <span class="mobile-hide">à gauche </span>pour naviguer entre les différents
+                        modules.<br>
+                        Vous pouvez revenir sur cette page en cliquant sur le logo de l’école.
+                    </p>
+                </div>
+            </section>
+        </main>
+    </div>
 
     <script>
-        // Effet "Ripple" (Onde) au clic sur les liens
-        const links = document.querySelectorAll('.menu-link');
+        (function () {
+            var sidebar = document.querySelector('.sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            var toggle = document.getElementById('menuToggle');
+            var menuLinks = document.querySelectorAll('.sidebar-menu a');
 
-        links.forEach(link => {
-            link.addEventListener('click', function(e) {
-                // Création de l'élément ripple
-                let x = e.clientX - e.target.getBoundingClientRect().left;
-                let y = e.clientY - e.target.getBoundingClientRect().top;
+            function openMenu() {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+                overlay.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('menu-open');
+                toggle.setAttribute('aria-label', 'Fermer le menu');
+                toggle.querySelector('i').className = 'fas fa-times';
+            }
 
-                let ripples = document.createElement('span');
-                ripples.style.left = x + 'px';
-                ripples.style.top = y + 'px';
-                ripples.classList.add('ripple');
-                this.appendChild(ripples);
+            function closeMenu() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                overlay.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('menu-open');
+                toggle.setAttribute('aria-label', 'Ouvrir le menu');
+                toggle.querySelector('i').className = 'fas fa-bars';
+            }
 
-                // Suppression après l'animation
-                setTimeout(() => {
-                    ripples.remove();
-                }, 600);
+            function toggleMenu() {
+                if (sidebar.classList.contains('open')) closeMenu();
+                else openMenu();
+            }
+
+            if (toggle) toggle.addEventListener('click', toggleMenu);
+            if (overlay) overlay.addEventListener('click', closeMenu);
+            menuLinks.forEach(function (link) { link.addEventListener('click', closeMenu); });
+
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 900) closeMenu();
             });
-        });
+        })();
     </script>
 </body>
+
 </html>

@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comptabilité</title>
+    <!-- Police moderne -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Mêmes variables globales que les paramètres */
+            --sidebar-bg: #0f172a;
+            --sidebar-active-bg: rgba(255, 255, 255, 0.2);
+            --sidebar-active-color: white;
+            --sidebar-text: white;
+            --main-bg: #ffffff;
+            --border-color: #E5E7EB;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --button-primary: #3670C7;
+            --button-danger: #ef4444;
+            --table-hover: #f8fafc;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            /* Couleurs spécifiques à la finance */
+            --finance-green: #10b981;
+            --finance-bg: #f0fdf4;
+            --finance-orange: #f59e0b;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0 20px;
+            background-color: #F8F8F8;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            height: 90vh;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg) !important;
+            padding: 24px 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 0 24px 20px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .sidebar-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--finance-green), #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 18px rgba(16, 185, 129, 0.4);
+        }
+
+        .sidebar-title-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.3;
+        }
+
+        .sidebar-title-text span.main {
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .sidebar-title-text span.sub {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 24px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .sidebar-item.active {
+            background-color: var(--sidebar-active-bg);
+            color: white;
+        }
+
+        .sidebar-item.active::before {
+            background-color: var(--finance-green);
+        }
+
+        .sidebar-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        /* Mobile Adjustments */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9998;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #f8fafc; /* Gris très léger pour le fond principal */
+        }
+
+        /* Header */
+        .header {
+            padding: 24px 32px;
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-title {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .page-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .page-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .btn:hover {
+            background-color: #f3f4f6;
+            border-color: #d1d5db;
+            transform: translateY(-1px);
+        }
+        
+        /* Contenu spécifique Comptabilité */
+        .content-area {
+            flex: 1;
+            overflow: auto;
+            padding: 32px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .section:not(.hidden) {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Vue Dashboard/Stats Rapides */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stat-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.green {
+            background-color: var(--finance-bg);
+            color: var(--finance-green);
+        }
+
+        .stat-icon.orange {
+            background-color: #fffbeb;
+            color: var(--finance-orange);
+        }
+        
+        .stat-icon.blue {
+            background-color: #eff6ff;
+            color: var(--button-primary);
+        }
+
+        /* Grille Formulaire + Table (style Setting.html) */
+        .finance-layout {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* Formulaires */
+        .form-container {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+        }
+
+        .form-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .form-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 14px;
+            background-color: #f8fafc;
+            color: #1e293b;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:hover,
+        .form-group select:hover {
+            border-color: #94a3b8;
+            background-color: #ffffff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--finance-green);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+        }
+
+        .form-group select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 16px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            padding-right: 48px;
+            cursor: pointer;
+        }
+
+        .amount-input-wrapper {
+            position: relative;
+        }
+
+        .amount-input-wrapper input {
+            padding-right: 50px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--finance-green), #059669);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+        }
+
+        /* Tableaux */
+        .table-container {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .table-toolbar {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+        }
+
+        .search-box {
+            position: relative;
+            width: 350px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            font-size: 14px;
+            background-color: #f8fafc;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--finance-green);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            text-align: left;
+        }
+
+        .table th {
+            background-color: #f8fafc;
+            padding: 16px 24px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .table td {
+            padding: 18px 24px;
+            font-size: 14px;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f0fdf4;
+            transform: scale(1.002);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge.success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .badge.warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .amount-cell {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background: #f1f5f9;
+            color: var(--text-primary);
+            border-color: #94a3b8;
+        }
+
+        .btn-action.edit:hover {
+            color: var(--finance-orange);
+            border-color: var(--finance-orange);
+            background: #fffbeb;
+        }
+
+        .btn-action.delete:hover {
+            color: var(--button-danger);
+            border-color: var(--button-danger);
+            background: #fef2f2;
+        }
+        
+        /* Rapports spécifiques */
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .report-filters {
+            display: flex;
+            gap: 16px;
+        }
+
+        .report-filters .form-group {
+            margin-bottom: 0;
+            min-width: 200px;
+        }
+
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .finance-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-container {
+                position: relative;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                height: 100vh;
+                z-index: 9999;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.mobile-open {
+                left: 0;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .report-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 20px;
+            }
+            
+            .report-filters {
+                flex-direction: column;
+            }
+            
+            .content-area {
+                padding: 16px;
+            }
+            
+            .header {
+                padding: 16px;
+            }
+            
+            .table-toolbar {
+                flex-direction: column;
+                gap: 16px;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidebar-overlay"></div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="sidebar-title-text">
+                    <span class="main">Comptabilité</span>
+                    <span class="sub">Gestion Financière</span>
+                </div>
+            </div>
+            
+            <a href="#" class="sidebar-item active" onclick="showSection('dashboard')">
+                <div class="sidebar-icon"><i class="fas fa-chart-pie"></i></div>
+                <span>Aperçu</span>
+            </a>
+            
+            <a href="#" class="sidebar-item" onclick="showSection('frais')">
+                <div class="sidebar-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                <span>Frais Scolaires</span>
+            </a>
+            
+            <a href="#" class="sidebar-item" onclick="showSection('rapports')">
+                <div class="sidebar-icon"><i class="fas fa-chart-line"></i></div>
+                <span>Rapports & Bilan</span>
+            </a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a class="btn" href="{% url 'dashboard' %}">
+                        <i class="fas fa-arrow-left"></i>
+                        Retour
+                    </a>
+                    <div class="header-title">
+                        <span class="page-title">Service Comptable</span>
+                        <span class="page-subtitle">Gestion des paiements et rapports financiers</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+
+                <!-- Section: Aperçu (Dashboard Rapide) -->
+                <section id="dashboard" class="section">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-title">Recettes du jour</span>
+                                <span class="stat-value">450 $</span>
+                            </div>
+                            <div class="stat-icon green">
+                                <i class="fas fa-arrow-trend-up"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-title">Paiements en attente</span>
+                                <span class="stat-value">12</span>
+                            </div>
+                            <div class="stat-icon orange">
+                                <i class="fas fa-clock-rotate-left"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <span class="stat-title">Total Élèves en règle</span>
+                                <span class="stat-value">85%</span>
+                            </div>
+                            <div class="stat-icon blue">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Raccourcis ou graphe générique ici si désiré -->
+                    <div style="background: white; padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); text-align: center; color: var(--text-secondary);">
+                        <i class="fas fa-chart-bar" style="font-size: 48px; color: #cbd5e1; margin-bottom: 16px;"></i>
+                        <h3>Synthèse globale de l'année en cours</h3>
+                        <p>Sélectionnez "Frais Scolaires" pour gérer les configurations ou "Rapports" pour les détails.</p>
+                    </div>
+                </section>
+
+                <!-- Section: Frais Scolaires -->
+                <section id="frais" class="section hidden">
+                    <div class="finance-layout">
+                        <!-- Formulaire Création/Configuration Frais -->
+                        <div class="form-container">
+                            <div class="form-header">
+                                <h2 class="form-title">Nouveau Type de Frais</h2>
+                            </div>
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="frais_nom">Intitulé du frais</label>
+                                    <input type="text" id="frais_nom" name="frais_nom" placeholder="Ex: Frais d'inscription, Minerval..." required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="frais_montant">Montant</label>
+                                    <div class="amount-input-wrapper">
+                                        <input type="number" step="0.01" id="frais_montant" name="frais_montant" placeholder="0.00" required>
+                                        <span class="currency-symbol">CDF</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="frais_classe">Applicable à (Classe)</label>
+                                    <select id="frais_classe" name="frais_classe">
+                                        <option value="toutes">Toutes les classes</option>
+                                        <!-- Inject classes here -->
+                                        <option value="1">1ère Année</option>
+                                        <option value="2">2ème Année</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="frais_periode">Périodicité</label>
+                                    <select id="frais_periode" name="frais_periode">
+                                        <option value="annuel">Annuel (Unique)</option>
+                                        <option value="trimestre">Par Trimestre</option>
+                                        <option value="mensuel">Mensuel</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn-submit">
+                                    <i class="fas fa-plus-circle"></i> Enregistrer le frais
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Tableau des frais configurés -->
+                        <div class="table-container">
+                            <div class="table-toolbar">
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" placeholder="Rechercher un type de frais..." onkeyup="filterTable(this, 'table-frais')">
+                                </div>
+                                <button class="btn" style="background: var(--finance-green); color: white; border-color: var(--finance-green);">
+                                    <i class="fas fa-file-export"></i> Exporter
+                                </button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table" id="table-frais">
+                                    <thead>
+                                        <tr>
+                                            <th>Intitulé</th>
+                                            <th>Montant</th>
+                                            <th>Périodicité</th>
+                                            <th>Cible (Classe)</th>
+                                            <th>État</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Exemple de ligne statique -->
+                                        <tr>
+                                            <td><strong style="color: var(--text-primary);">Frais d'inscription</strong></td>
+                                            <td class="amount-cell">50.00 $</td>
+                                            <td>Annuel</td>
+                                            <td>Toutes</td>
+                                            <td><span class="badge success"><i class="fas fa-check"></i> Actif</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn-action edit" title="Modifier"><i class="fas fa-pen"></i></button>
+                                                    <button class="btn-action delete" title="Désactiver"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong style="color: var(--text-primary);">Minerval T1</strong></td>
+                                            <td class="amount-cell">120.00 $</td>
+                                            <td>Trimestre</td>
+                                            <td>1ère Année</td>
+                                            <td><span class="badge success"><i class="fas fa-check"></i> Actif</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn-action edit" title="Modifier"><i class="fas fa-pen"></i></button>
+                                                    <button class="btn-action delete" title="Désactiver"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section: Rapports -->
+                <section id="rapports" class="section hidden">
+                    <div class="report-header">
+                        <div>
+                            <h2 style="margin: 0 0 8px 0; font-size: 1.2rem; color: var(--text-primary);">Rapports Financiers</h2>
+                            <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">Générez et consultez les bilans de paiements.</p>
+                        </div>
+                        <div class="report-filters">
+                            <div class="form-group">
+                                <label>Classe</label>
+                                <select>
+                                    <option value="all">Toutes</option>
+                                    <option value="1">1ère Année</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Période</label>
+                                <select>
+                                    <option value="today">Aujourd'hui</option>
+                                    <option value="week">Cette semaine</option>
+                                    <option value="month">Ce mois</option>
+                                    <option value="year" selected>Cette année</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="display: flex; align-items: flex-end;">
+                                <button class="btn" style="background: var(--button-primary); color: white; border-color: var(--button-primary); height: 48px; width: 100%;">
+                                    <i class="fas fa-filter"></i> Filtrer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-toolbar">
+                            <h3 style="margin:0; font-size: 1rem; color: var(--text-primary);">État des paiements récents</h3>
+                            <button class="btn">
+                                <i class="fas fa-print"></i> Imprimer le bilan
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Élève</th>
+                                        <th>Classe</th>
+                                        <th>Motif (Frais)</th>
+                                        <th>Montant Payé</th>
+                                        <th>Reçu N°</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>12 Mars 2026</td>
+                                        <td><strong>Jean Dupont</strong></td>
+                                        <td>1ère Année</td>
+                                        <td>Minerval T1</td>
+                                        <td class="amount-cell" style="color: var(--finance-green);">+ 120.00 $</td>
+                                        <td>#REC-2026-001</td>
+                                        <td><span class="badge success">Encaissé</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>11 Mars 2026</td>
+                                        <td><strong>Marie Curie</strong></td>
+                                        <td>2ème Année</td>
+                                        <td>Frais d'inscription</td>
+                                        <td class="amount-cell" style="color: var(--finance-green);">+ 50.00 $</td>
+                                        <td>#REC-2026-002</td>
+                                        <td><span class="badge success">Encaissé</span></td>
+                                    </tr>
+                                     <tr>
+                                        <td>10 Mars 2026</td>
+                                        <td><strong>Albert E.</strong></td>
+                                        <td>1ère Année</td>
+                                        <td>Minerval T1</td>
+                                        <td class="amount-cell" style="color: var(--finance-orange);">+ 60.00 $ (Acompte)</td>
+                                        <td>#REC-2026-003</td>
+                                        <td><span class="badge warning">Partiel</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Cacher toutes les sections
+            document.querySelectorAll('.section').forEach(sec => {
+                sec.classList.add('hidden');
+            });
+            // Afficher la section demandée
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            // Mettre à jour la sidebar
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Fermer menu mobile si ouvert
+            if(window.innerWidth <= 992) {
+                toggleSidebar();
+            }
+        }
+
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('mobile-open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+
+        document.querySelector('.sidebar-overlay').addEventListener('click', toggleSidebar);
+
+        function filterTable(input, tableId) {
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById(tableId);
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let td = tr[i].getElementsByTagName("td");
+                let txtValue = "";
+                for(let j=0; j<td.length; j++) {
+                    if (td[j]) {
+                        txtValue += td[j].textContent || td[j].innerText;
+                    }
+                }
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+        
+        // Initialiser la première vue
+        document.addEventListener('DOMContentLoaded', () => {
+             // Aperçu est affiché par défaut au chargement
+        });
+    </script>
+</body>
+
+</html>
