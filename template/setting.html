@@ -1499,11 +1499,13 @@
                     <span class="sub">Configuration générale</span>
                 </div>
             </div>
+            {% if user.role == "super_admin" %}
             <a href="#annee" class="sidebar-item" data-section="annee">
                 <div class="sidebar-icon"><i class="fas fa-calendar-alt"></i></div>
                 <span>Année scolaire</span>
             </a>
-            {% if user.section == "Secondaire" %}
+            {% endif %}
+            {% if user.section.section == "Secondaire" %}
             <a href="#options" class="sidebar-item" data-section="options">
                 <div class="sidebar-icon"><i class="fas fa-cog"></i></div>
                 <span>Options</span>
@@ -1513,14 +1515,12 @@
                 <div class="sidebar-icon"><i class="fas fa-school"></i></div>
                 <span>Classes</span>
             </a>
-            <a href="#users" class="sidebar-item" data-section="users">
-                <div class="sidebar-icon"><i class="fas fa-users"></i></div>
-                <span>Utilisateurs</span>
-            </a>
-            {% comment %} <a href="#sections" class="sidebar-item" data-section="sections">
+            {% if user.role == "super-admin" %}
+            <a href="#sections" class="sidebar-item" data-section="sections">
                 <div class="sidebar-icon"><i class="fas fa-shield-alt"></i></div>
                 <span>Sections</span>
-            </a> {% endcomment %}
+            </a>
+            {% endif %}
             <a href="#frais" class="sidebar-item" data-section="frais">
                 <div class="sidebar-icon"><i class="fas fa-file-invoice-dollar"></i></div>
                 <span>Frais scolaires</span>
@@ -1529,10 +1529,16 @@
                 <div class="sidebar-icon"><i class="fas fa-chart-pie"></i></div>
                 <span>Répartition Frais</span>
             </a>
+            {% if user.role == "super-admin" %}
+            <a href="#users" class="sidebar-item" data-section="users">
+                <div class="sidebar-icon"><i class="fas fa-users"></i></div>
+                <span>Utilisateurs</span>
+            </a>
             <a href="#ecole" class="sidebar-item" data-section="ecole">
                 <div class="sidebar-icon"><i class="fas fa-building"></i></div>
                 <span>Profil école</span>
             </a>
+            {% endif %}
         </div>
 
         <!-- Main Content -->
@@ -1649,21 +1655,10 @@
                                         <select id="frais_classe" name="frais_classe">
                                             <option value="">Toutes les classes</option>
                                             {% for item in classes %}
-                                            <option {% if item.id %} selected {% endif %} value="{{ item.id }}">{{ item.classe }}</option>
+                                            <option {% if item.id %} selected {% endif %} value="{{ item.id }}">{{ item.classe }} / {{ item.option.option }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
-                                    {% if user.section == "Secondaire" %}
-                                    <div class="col-6">
-                                        <label for="frais_option">Option</label>
-                                        <select id="frais_option" name="frais_option">
-                                            <option value="">Toutes les options</option>
-                                            {% for item in options %}
-                                            <option {% if item.id %} selected {% endif %} value="{{ item.id }}">{{ item.option }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    {% endif %}
                                     <div class="col-6">
                                         <div id="frais-success"></div>
                                     </div>
@@ -1694,7 +1689,7 @@
                                             <td><input type="checkbox" class="checkbox"></td>
                                             <td>{{ forloop.counter }}</td>
                                             <td>{{ f.frais }}</td>
-                                            <td>{{ f.classe.classe|default:"Toutes" }}</td>
+                                            <td>{{ f.classe.classe|default:"Toutes" }} {% if f.classe.option %}{{ f.classe.option.option }}{% endif %}</td>
                                             <td class="table-actions">
                                                 <a href="#" onclick="modifierFrais('{{ f.id }}','{{ f.frais|stringformat:"s" }}','{% if f.classe %}{{ f.classe.id }}{% else %}{% endif %}')" class="btn btn-muted">Modifier</a>
                                                 <a href="" class="btn btn-muted">Supprimer</a>
@@ -1729,7 +1724,7 @@
                                         <select id="repartition_frais" name="repartition_frais">
                                             <option value="">Selectionnez</option>
                                             {% for item in list_frais %}
-                                            <option value="{{ item.id }}">{{ item.frais }} $ - {{ item.classe.classe|default:"Toutes les classes" }}</option>
+                                            <option value="{{ item.id }}">{{ item.frais }} $ - {{ item.classe.classe|default:"Toutes les classes" }} / {% if item.classe.option %}{{ item.classe.option.option }}{% endif %}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -1773,7 +1768,7 @@
                                             <tr class="group-header">
                                                 <td colspan="7" style="background-color: #f8fafc; font-weight: 600; color: #475569; padding: 12px 16px; border-left: 4px solid var(--button-primary);">
                                                     <i class="fas fa-graduation-cap" style="margin-right: 8px;"></i>
-                                                    Classe : {{ class_group.grouper|default:"Toutes les classes" }}
+                                                    Classe : {{ class_group.grouper|default:"Toutes les classes" }} {% if class_group.grouper.option %}{{ class_group.grouper.option.option }}{% endif %}
                                                 </td>
                                             </tr>
                                             {% for rep in class_group.list %}
@@ -1783,7 +1778,7 @@
                                                 <td>{{ rep.motif }}</td>
                                                 <td>{{ rep.montant }} $</td>
                                                 <td>{{ rep.frais.frais }} $</td>
-                                                <td>{{ rep.frais.classe.classe|default:"Toutes" }} {{ rep.frais.option.option|default:"" }}</td>
+                                                <td>{{ rep.frais.classe.classe|default:"Toutes" }} {% if rep.frais.classe.option %}{{ rep.frais.classe.option.option }}{% endif %}</td>
                                                 <td class="table-actions">
                                                     <a href="#" onclick="modifierFraisRepartition('{{ rep.id }}','{{ rep.motif|escapejs }}','{{ rep.frais.id }}', '{{ rep.montant|stringformat:"s" }}')" class="btn btn-muted">Modifier</a>
                                                     <a href="" class="btn btn-muted">Supprimer</a>
@@ -1990,6 +1985,17 @@
                                         <input type="text" id="classe_nom" name="classe_nom" placeholder="1, 2, 3 ..."
                                             required>
                                     </div>
+                                    {% if user.section.section == 'Secondaire' %}
+                                    <div class="col-6">
+                                        <label>Option</label>
+                                        <select id="option_classe" name="option_classe" required>
+                                            <option value="">Selectionner une option</option>
+                                            {% for option in options %}
+                                            <option value="{{ option.id }}">{{ option.option }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    {% endif %}
                                     <div class="col-6">
                                         <label>Statut de la classe</label>
                                         <div class="toggle-container">
@@ -2020,6 +2026,10 @@
                                             <th><input type="checkbox" class="checkbox"></th>
                                             <th>#</th>
                                             <th>Nom</th>
+                                            {% if user.section.section == 'Secondaire' %}
+                                            <th>Option</th>
+                                            {% endif %}
+                                            <th>Statut</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -2029,6 +2039,20 @@
                                             <td><input type="checkbox" class="checkbox"></td>
                                             <td>{{ forloop.counter }}</td>
                                             <td>{{ item.classe }}</td>
+                                            {% if item.section.section == 'Secondaire' %}
+                                            <td>{{ item.option.option }}</td>
+                                            {% endif %}
+                                            <td>
+                                                {% if item.is_active %}
+                                                <span class="status-badge status-active">
+                                                    <span class="status-dot"></span> Actif
+                                                </span>
+                                                {% else %}
+                                                <span class="status-badge status-inactive">
+                                                    <span class="status-dot"></span> Inactif
+                                                </span>
+                                                {% endif %}
+                                            </td>
                                             <td class="table-actions">
                                                 <a href="#" onclick="modifierClasse('{{ item.id }}', '{{ item.classe }}')"
                                                     class="btn btn-muted">Modifier</a>
@@ -2110,6 +2134,7 @@
                                             <th>Nom d'utilisateur</th>
                                             <th>Email</th>
                                             <th>Rôle</th>
+                                            <th>Section</th>
                                             <th>Statut</th>
                                             <th>Actions</th>
                                         </tr>
@@ -2122,6 +2147,7 @@
                                             <td>{{ u.username }}</td>
                                             <td>{{ u.email }}</td>
                                             <td>{{ u.role }}</td>
+                                            <td>{{ u.section.section }}</td>
                                             <td>
                                                 {% if u.is_active %}
                                                 <span class="status-badge status-active">
@@ -2155,25 +2181,34 @@
                 <section class="section hidden" data-section="sections">
                     <div class="section-body">
                         <div class="form-container">
-                            <form action="" method="post">
+                            <form id="sectionForm" method="post">
                                 {% csrf_token %}
                                 <div class="grid">
+                                    <input type="hidden" name="id" id="id_section">
                                     <div class="col-6">
-                                        <label for="perm_name">Nom</label>
-                                        <input type="text" id="perm_name" name="perm_name"
-                                            placeholder="Ex: gérer_parents" required>
-                                    </div>
-                                    <div class="col-6">
-                                        <label for="perm_name">Nom</label>
-                                        <select id="perm_user" name="perm_user">
+                                        <label for="section_nom">Nom</label>
+                                        <select id="section_nom" name="section">
                                             <option value="">Sélectionner</option>
                                             {% for u in section %}
                                             <option value="{{ u }}">{{ u }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
+                                    <div class="col-6">
+                                        <label>Statut de la section</label>
+                                        <div class="toggle-container">
+                                            <label class="switch">
+                                                <input type="checkbox" id="is_active_section" name="is_active" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                            <span style="font-size: 0.9rem; color: var(--text-secondary);">Actif</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div id="section-success"></div>
+                                    </div>
                                     <div class="col-12 actions">
-                                        <button type="submit" class="btn-form">Ajouter</button>
+                                        <button type="submit" class="btn-form">Enregistrer</button>
                                     </div>
                                 </div>
                             </form>
@@ -2188,21 +2223,33 @@
                                         <tr>
                                             <th><input type="checkbox" class="checkbox"></th>
                                             <th>#</th>
-                                            <th>Permission</th>
-                                            <th>Utilisateur</th>
+                                            <th>Section</th>
+                                            <th>Statut</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for p in liste_permissions %}
+                                        {% for p in liste_section %}
                                         <tr>
                                             <td><input type="checkbox" class="checkbox"></td>
                                             <td>{{ forloop.counter }}</td>
-                                            <td>{{ p.nom }}</td>
-                                            <td>{{ p.utilisateur.username }}</td>
+                                            <td>{{ p.section }}</td>
+                                            <td>
+                                                {% if p.is_active %}
+                                                <span class="status-badge status-active">
+                                                    <span class="status-dot"></span> Actif
+                                                </span>
+                                                {% else %}
+                                                <span class="status-badge status-inactive">
+                                                    <span class="status-dot"></span> Inactif
+                                                </span>
+                                                {% endif %}
+                                            </td>
                                             <td class="table-actions">
-                                                <a href="{% url 'permission_delete' p.id %}"
-                                                    class="btn btn-muted">Retirer</a>
+                                                <a href="#" onclick="modifierSection('{{ p.id }}', '{{ p.section }}', '{{ p.is_active }}')"
+                                                    class="btn btn-muted">Modifier</a>
+                                                <a href="#"
+                                                    class="btn btn-muted">Supprimer</a>
                                             </td>
                                         </tr>
                                         {% empty %}
@@ -2222,6 +2269,29 @@
     </div>
 
     <script>
+
+        function modifierSection(id, section, is_active){
+            document.getElementById("id_section").value = id;
+            
+            // On ajoute l'option si elle n'existe pas dans le select (cas d'une section déjà enregistrée)
+            const select = document.getElementById("section_nom");
+            let optionExists = false;
+            for (let i = 0; i < select.options.length; i++) {
+                if (select.options[i].value === section) {
+                    optionExists = true;
+                    break;
+                }
+            }
+            if (!optionExists) {
+                const newOption = new Option(section, section);
+                select.add(newOption);
+            }
+            select.value = section;
+
+            const activeStatus = document.getElementById("is_active_section");
+            activeStatus.checked = (is_active === 'True');
+            updateToggleLabel(activeStatus);
+        }
 
         function modifierOption(id, nom, is_active){
             document.getElementById("id_option").value = id;
@@ -2244,6 +2314,14 @@
         }
 
         document.getElementById('is_active').addEventListener('change', function() {
+            updateToggleLabel(this);
+        });
+
+        document.getElementById('is_active_section').addEventListener('change', function() {
+            updateToggleLabel(this);
+        });
+
+        document.getElementById('is_active_classe').addEventListener('change', function() {
             updateToggleLabel(this);
         });
 
@@ -2599,6 +2677,46 @@
             .catch(error => {
                 console.error("Erreur:", error);
                 document.getElementById("option-success").innerHTML = "Une erreur est survenue.";
+            });
+        })
+
+        document.getElementById("sectionForm").addEventListener("submit", function(e){
+            e.preventDefault();
+            let form = this;
+            let formData = new FormData(form);
+
+            fetch("{% url 'nouvelle_section' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let message = document.getElementById("section-success");
+                let alertDiv = document.getElementById("alert-message");
+                if(data.success){
+                    alertDiv.style.display = "block";
+                    message.style.color = "#10b981";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "sections";
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    alertDiv.style.display = "block";
+                    message.style.color = "#ef4444";
+                    message.innerHTML = data.message;
+                    setTimeout(() => {
+                        window.location.hash = "sections";
+                        window.location.reload();
+                    }, 1500);  
+                }
+            })
+            .catch(error => {
+                console.error("Erreur:", error);
+                document.getElementById("section-success").innerHTML = "Une erreur est survenue.";
             });
         })
                 

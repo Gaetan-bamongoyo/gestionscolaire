@@ -531,22 +531,11 @@
                 <div data-step="3" class="hidden">
                     <h3>Détails d'inscription</h3>
                     <div class="grid">
-                        {% if section.section == "Secondaire" %}
-                        <div class="col-6">
-                            <label for="option">Option</label>
-                            <select name="option" id="option" required>
-                                <option value="">Sélectionner</option>
-                                {% for i in option %}
-                                <option value="{{i.id}}">{{i.option}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        {% endif %}
                         <div class="col-6">
                             <label for="classe">Classe</label>
                             <select name="classe" id="classe" required>
                                 {% for i in classe %}
-                                <option value="{{i.id}}">{{i.classe}}</option>
+                                <option value="{{i.id}}">{{i.classe}} {% if i.option %}{{i.option.option}}{% endif %}</option>
                                 {% endfor %}
                             </select>
                         </div>

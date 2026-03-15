@@ -38,6 +38,7 @@ class Classes(models.Model):
     classe = models.CharField(max_length=50)
     section = models.ForeignKey(Section, on_delete=models.CASCADE, null=True, blank=True)
     ecole = models.ForeignKey(Ecole, on_delete=models.CASCADE, null=True, blank=True)
+    option = models.ForeignKey(Options, on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
 class AnneeScolaires(models.Model):
@@ -51,7 +52,6 @@ class Inscriptions(models.Model):
     classe = models.ForeignKey(Classes, on_delete=models.CASCADE)
     eleve = models.ForeignKey(Eleves, on_delete=models.CASCADE)
     annee = models.ForeignKey(AnneeScolaires, on_delete=models.CASCADE)
-    option = models.ForeignKey(Options, on_delete=models.CASCADE, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     dateinscription = models.DateField(auto_now=True)
 

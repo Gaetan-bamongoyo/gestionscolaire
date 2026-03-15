@@ -112,10 +112,7 @@ def inscriptionPage(request):
         get_annee = AnneeScolaires.objects.filter(is_active=True, ecole=ecole) 
 
         # Afficher les classes en fonction de la section de l'école
-        if request.user.role == 'super-admin':
-            get_classe = Classes.objects.filter(section = section, section__ecole = ecole, is_active=True)
-        else:
-            get_classe = Classes.objects.filter(section = section, section__ecole = ecole, is_active=True)
+        get_classe = Classes.objects.filter(section = section, section__ecole = ecole, is_active=True)
 
         get_option = Options.objects.all()
 
@@ -125,7 +122,7 @@ def inscriptionPage(request):
             'option': get_option,
             'section': section
         }
-        return render(request, 'eleve/eleve.html', data)
+        return render(request, 'eleves/eleve.html', data)
 
 @login_required
 def enregistreInscription(request):
@@ -174,30 +171,17 @@ def enregistreInscription(request):
             ecole = request.user.ecole
             section = request.user.section
 
-            if section.section == "Secondaire": 
-                get_option = data.get('option')
-                get_option_id = Options.objects.get(id = get_option)
-                get_option_id.id
-
             # verifier si l'eleve est deja inscrit pour eviter les doublons
             if Inscriptions.objects.filter(eleve = get_eleve.id, annee = get_annee).exists():
                 return redirect('inscription')
             
-            if section.section == "Secondaire":
-                Inscriptions.objects.create(
-                    classe = get_classe_id,
-                    eleve = get_eleve,
-                    annee = get_annee,
-                    option = get_option_id
-                )
-                return redirect('classe')
-            else:
-                Inscriptions.objects.create(
-                    classe = get_classe_id,
-                    eleve = get_eleve,
-                    annee = get_annee,
-                )
-                return redirect('classe')
+            Inscriptions.objects.create(
+                classe = get_classe_id,
+                eleve = get_eleve,
+                annee = get_annee,
+            )
+            return redirect('classe')
+            
         else:
             return redirect('eleve')
 
@@ -230,7 +214,7 @@ def settingPage(request):
 
         get_frais = Frais.objects.filter(ecole = get_ecole, section = request.user.section )
         get_repartition = RepartitionFrais.objects.filter(ecole = get_ecole, section = request.user.section).order_by('frais__classe__classe')
-        get_options = Options.objects.filter(ecole = get_ecole)
+        get_options = Options.objects.filter(ecole = get_ecole) 
 
         context = {
             'section':sections_disponible,
@@ -242,7 +226,8 @@ def settingPage(request):
             'sections': get_sections,
             'list_frais': get_frais,
             'repartition_frais':get_repartition,
-            'options': get_options
+            'options': get_options,
+            'liste_section':get_sections
         }
         return render(request, 'setting.html', context)
 
@@ -254,6 +239,15 @@ def saveClasse(request):
             get_classe = data.get('classe_nom')
             get_id = data.get('id_classe')
             get_is_active = True if data.get('is_active') == 'on' else False
+            get_option = data.get('option_classe')
+
+            # recuperer l'id de l'option (optionnel)
+            get_option_id = None
+            if get_option:
+                try:
+                    get_option_id = Options.objects.get(id = get_option)
+                except (Options.DoesNotExist, ValueError):
+                    pass
 
             # recuperer la section de l'ecole pour verifier si c'est secondaire ou pas
             section = request.user.section
@@ -261,23 +255,23 @@ def saveClasse(request):
             # recuperer l'ecole de l'utilisateur pour l'associer a la classe
             ecole = request.user.ecole
 
-            # verification si l'id existe
-            if get_id:
-                if Classes.objects.filter(classe = get_classe, section = section, ecole = ecole).exclude(id = get_id).exists():
+            # verification si l'id existe pour mise à jour
+            if get_id and get_id != '':
+                try:
+                    get_classe_id = Classes.objects.get(id = get_id, ecole = ecole)
+                    get_classe_id.classe = get_classe
+                    get_classe_id.is_active = get_is_active
+                    get_classe_id.option = get_option_id
+                    get_classe_id.save()
                     return JsonResponse({
-                        'success': False,
-                        'message': 'Une autre classe avec ce nom existe deja.'
+                        'success': True,
+                        'message': 'Classe mise à jour avec succès.'
                     })
-                get_classe_id = Classes.objects.get(id = get_id)
-                get_classe_id.classe = get_classe
-                get_classe_id.is_active = get_is_active
-                get_classe_id.save()
-                return JsonResponse({
-                    'success': True,
-                    'message': 'Classe mise à jour avec succès.'
-                })
+                except (Classes.DoesNotExist, ValueError):
+                    pass # Si l'ID est invalide, on continue comme une nouvelle création ou on renvoie une erreur
             
-            if Classes.objects.filter(classe = get_classe, section = section, ecole = ecole).exists():
+            # Vérification d'existence pour une nouvelle classe ou si la mise à jour a échoué
+            if Classes.objects.filter(classe = get_classe, section = section, ecole = ecole, option = get_option_id).exists():
                 return JsonResponse({
                     'success': False,
                     'message': 'La classe existe deja.'
@@ -288,26 +282,13 @@ def saveClasse(request):
                     classe = get_classe,
                     section = section,
                     ecole = ecole,
-                    is_active = get_is_active
+                    is_active = get_is_active,
+                    option = get_option_id
                 )
                 return JsonResponse({
                     'success': True,
                     'message': 'Classe enregistrée avec succès.'
                 })
-
-@login_required  
-def saveSection(request):
-    if request.method == 'POST':
-        data = request.POST
-        get_section = data.get('section')
-
-        Section.objects.create(
-            section = get_section
-        )
-        return JsonResponse({
-            'success': True,
-            'message': 'Section mise à jour avec succès.'
-        })
 
 @login_required
 def create_annee(request):
@@ -406,16 +387,16 @@ def classePage(request):
         section = request.user.section
         ecole = request.user.ecole
         get_classe = Classes.objects.filter(section = section, section__ecole = ecole, is_active=True)
-        annee = AnneeScolaires.objects.get(is_active = True)
+        annee = AnneeScolaires.objects.filter(is_active = True, ecole = ecole).first()
         print(get_classe)
         
         # Si c'est une requête AJAX pour récupérer les données d'une classe
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            classe = request.GET.get('classe')
-            if classe:
+            classe_id = request.GET.get('id')
+            if classe_id:
                 try:
-                    # Récupérer la classe
-                    classe_obj = Classes.objects.get(classe=classe, section = section)
+                    # Récupérer la classe par ID pour éviter les doublons de nom
+                    classe_obj = Classes.objects.get(id=classe_id, section=section)
                     
                     # Récupérer les inscriptions de cette classe
                     inscriptions = Inscriptions.objects.filter(classe=classe_obj, is_active=True, classe__section__ecole = ecole, annee = annee)
@@ -457,7 +438,7 @@ def classePage(request):
                             'lieu_naissance': eleve.lieunaissance,
                             'telephone': eleve.telephone,
                             'adresse': eleve.adresse,
-                            'option': inscription.option.option if inscription.option else '-',
+                            'option': inscription.classe.option.option if (inscription.classe and inscription.classe.option) else '-',
                             'parent': f"{eleve.parent.nom} {eleve.parent.prenom}"
                         })
                     

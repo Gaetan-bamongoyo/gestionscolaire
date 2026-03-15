@@ -167,10 +167,10 @@ def nouveau_utilisateur(request):
                 })
             
             # verifier si le role super-admin par rapport a la section existe deja
-            if get_role == 'super-admin' and Utilisateurs.objects.filter(role = 'super-admin', section = target_section, ecole = ecole).exists():
+            if get_role == 'admin' and Utilisateurs.objects.filter(role = 'admin', section = target_section, ecole = ecole).exists():
                 return JsonResponse({
                     'success': False,
-                    'message': 'Un super-admin existe déjà pour cette section.'
+                    'message': 'Un admin existe déjà pour cette section.'
                 })
 
             # enregistrement de nouveau utilisateur
@@ -218,6 +218,52 @@ def update_ecole(request):
             return JsonResponse({
                 'success': True,
                 'message': 'Ecole mise à jour avec succès.'
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': 'Une erreur est survenue.'
+            })
+
+@login_required
+def nouvelle_section(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            data = request.POST
+            get_section = data.get('section')
+            get_ecole = request.user.ecole
+            get_id = data.get('id')
+            # Les checkboxes renvoient 'on' si cochées, sinon elles ne sont pas dans le POST
+            get_is_active = True if data.get('is_active') == 'on' else False
+
+            # verifier si la section id existe et on modifier
+            if get_id and Section.objects.filter(id = get_id).exists():
+                section = Section.objects.get(id = get_id)
+                section.section = get_section
+                section.ecole = get_ecole
+                section.is_active = get_is_active
+                section.save()
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Section mise à jour avec succès.'
+                })
+            
+            # verifier si la section existe deja
+            if Section.objects.filter(section = get_section, ecole = get_ecole).exists():
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Une section avec ce nom existe deja.'
+                })
+            
+            # enregistrement de la section
+            Section.objects.create(
+                section = get_section,
+                ecole = get_ecole,
+                is_active = get_is_active
+            )
+            return JsonResponse({
+                'success': True,
+                'message': 'Section enregistrée avec succès.'
             })
         else:
             return JsonResponse({

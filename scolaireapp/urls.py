@@ -9,7 +9,6 @@ urlpatterns = [
     path('setting', settingPage, name='setting'),
     path('inscription', inscriptionPage, name='inscription'),
     path('nouvelle_classe', saveClasse, name='nouvelle_classe'),
-    path('nouvelle_section', saveSection, name='nouvelle_section'),
     path('nouvelle_annee', create_annee, name='nouvelle_annee'),
     path('modifier_page/<str:id>', modifierPage, name='modifier_page'),
     path('modifier_eleve', modifierEleve, name='modifier_eleve'),

@@ -746,7 +746,7 @@
             <nav class="sidebar-menu">
                 <div class="menu-title">Navigation</div>
                 <ul class="menu-list">
-                    {% if user.role == "super-admin" %}
+                    {% if user.role == "super-admin" or user.role == "admin" %}
                     <li class="menu-item">
                         <a href="{% url 'classe' %}">
                             <span class="icon"><i class="fas fa-pen-to-square"></i></span>

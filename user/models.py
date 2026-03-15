@@ -23,6 +23,7 @@ class Section(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     section = models.CharField(max_length=50)
     ecole = models.ForeignKey(Ecole, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = 'Section'

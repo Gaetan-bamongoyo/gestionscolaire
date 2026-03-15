@@ -582,9 +582,9 @@
 
         <div class="sidebar-section-title">Sélectionner une classe</div>
         {% for item in get_classe %}
-            <a href="#" class="sidebar-item" data-class="{{ item.classe }}">
+            <a href="#" class="sidebar-item" data-id="{{ item.id }}">
                 <div class="sidebar-icon"><i class="fas fa-users"></i></div>
-                <span>{{ item.classe }}</span>
+                <span>{{ item.classe }} {% if item.option %}{{ item.option.option }}{% else %}{% endif %}</span>
             </a>
         {% endfor %}
     </div>
@@ -685,8 +685,8 @@
 
 <script>
     // Function to update statistics and students
-    function updateStatsAndStudents(className) {
-        fetch(`classe?classe=${className}`, {
+    function updateStatsAndStudents(classId) {
+        fetch(`classe?id=${classId}`, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
@@ -772,8 +772,8 @@
             document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
             this.classList.add('active');
 
-            const selectedClass = this.getAttribute('data-class');
-            updateStatsAndStudents(selectedClass);
+            const selectedClassId = this.getAttribute('data-id');
+            updateStatsAndStudents(selectedClassId);
 
             if (window.innerWidth <= 900) {
                 document.querySelector('.sidebar').classList.remove('mobile-open');
@@ -803,11 +803,11 @@
 
     // Initialize with first class data
     document.addEventListener('DOMContentLoaded', function () {
-        const firstClass = document.querySelector('.sidebar-item[data-class]');
+        const firstClass = document.querySelector('.sidebar-item[data-id]');
         if (firstClass) {
             firstClass.classList.add('active');
-            const className = firstClass.getAttribute('data-class');
-            updateStatsAndStudents(className);
+            const classId = firstClass.getAttribute('data-id');
+            updateStatsAndStudents(classId);
         }
     });
 
