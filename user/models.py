@@ -34,6 +34,7 @@ class Utilisateurs(AbstractUser):
     role = models.CharField(max_length=50, null=True)
     ecole = models.ForeignKey(Ecole, on_delete=models.CASCADE, null=True, blank=True)
     section = models.ForeignKey(Section, on_delete=models.CASCADE, null=True, blank=True)
+    photo = models.ImageField(upload_to='profiles/', null=True, blank=True)
 
     class Meta:
         verbose_name = 'Utilisateur'

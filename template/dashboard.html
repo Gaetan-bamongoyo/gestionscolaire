@@ -827,6 +827,7 @@
                     </div>
 
                     <div class="quick-actions">
+                        {% if user.role == 'super-admin' or user.role == 'admin' %}
                         <a href="{% url 'classe' %}" class="quick-action">
                             <strong><i class="fas fa-user-plus"></i> Nouvelle inscription</strong>
                             <span>Créer ou mettre à jour le dossier d’un élève.</span>
@@ -839,10 +840,12 @@
                             <strong><i class="fas fa-file-lines"></i> Consulter les bulletins</strong>
                             <span>Visualiser les moyennes et résultats par classe.</span>
                     </a>
+                    
                     <a href="{% url 'setting' %}" class="quick-action">
                         <strong><i class="fas fa-gear"></i> Paramètres</strong>
                         <span>Configurer années, options, classes et utilisateurs.</span>
                         </a>
+                    {% endif %}
                     </div>
 
                     <div class="stats-row">

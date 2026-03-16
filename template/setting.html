@@ -1298,7 +1298,7 @@
             .table td:nth-child(4) {
                 display: none;
             }
-        }
+
     </style>
     <script>
         function handleBack() {
@@ -1443,9 +1443,17 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function () {
-            // Handle initial hash or default to 'annee'
-            const initialSection = window.location.hash.replace('#', '') || 'annee';
-            showSection(initialSection, false);
+            // Define userRole from Django template context
+            const userRole = "{{ user.role|default:'' }}";
+            
+            if (userRole === 'super-admin') {   
+                // Handle initial hash or default to 'annee'
+                const initialSection = window.location.hash.replace('#', '') || 'annee';
+                showSection(initialSection, false);
+            } else {
+                const initialSection = window.location.hash.replace('#', '') || 'options';
+                showSection(initialSection, false);
+            }
             
             attachTableFilters();
             attachTableRowListeners();
@@ -1478,6 +1486,22 @@
                     }
                 });
             }
+
+            // Gestion du changement de photo de profil
+            const profilePhotoInput = document.getElementById('profile_photo_input');
+            if (profilePhotoInput) {
+                profilePhotoInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            const container = document.getElementById('profile-preview-container');
+                            container.innerHTML = '<img src="' + event.target.result + '" alt="Profile preview" id="profile-img-preview">';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
         });
     </script>
     {% load static %}
@@ -1499,7 +1523,7 @@
                     <span class="sub">Configuration générale</span>
                 </div>
             </div>
-            {% if user.role == "super_admin" %}
+            {% if user.role == "super-admin" %}
             <a href="#annee" class="sidebar-item" data-section="annee">
                 <div class="sidebar-icon"><i class="fas fa-calendar-alt"></i></div>
                 <span>Année scolaire</span>
@@ -1521,6 +1545,7 @@
                 <span>Sections</span>
             </a>
             {% endif %}
+            {% if user.role == "super-admin" or user.role == "admin" %}
             <a href="#frais" class="sidebar-item" data-section="frais">
                 <div class="sidebar-icon"><i class="fas fa-file-invoice-dollar"></i></div>
                 <span>Frais scolaires</span>
@@ -1529,6 +1554,7 @@
                 <div class="sidebar-icon"><i class="fas fa-chart-pie"></i></div>
                 <span>Répartition Frais</span>
             </a>
+            {% endif %}
             {% if user.role == "super-admin" %}
             <a href="#users" class="sidebar-item" data-section="users">
                 <div class="sidebar-icon"><i class="fas fa-users"></i></div>
@@ -2078,6 +2104,7 @@
                             <form id="userForm" method="post">
                                 {% csrf_token %}
                                 <div class="grid">
+                                    <input type="hidden" id="id_utilisateur" name="id_utilisateur">
                                     <div class="col-4">
                                         <label for="user_nom">Nom</label>
                                         <input type="text" id="user_nom" name="user_nom" placeholder="ex: jdoe" required>
@@ -2110,7 +2137,18 @@
                                     </div>
                                     <div class="col-6">
                                         <label for="user_password">Mot de passe</label>
-                                        <input type="password" id="user_password" name="user_password" required>
+                                        <input type="password" id="user_password" name="user_password">
+                                        <span class="hint" id="password_hint" style="display: none;">Laissez vide pour conserver le mot de passe actuel.</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <label>Statut de l'utilisateur</label>
+                                        <div class="toggle-container">
+                                            <label class="switch">
+                                                <input type="checkbox" id="user_is_active" name="is_active" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                            <span style="font-size: 0.9rem; color: var(--text-secondary);">Actif</span>
+                                        </div>
                                     </div>
                                     <div class="col-6">
                                         <div id="user-success"></div>
@@ -2160,9 +2198,8 @@
                                                 {% endif %}
                                             </td>
                                             <td class="table-actions">
-                                                <a href="" class="btn btn-muted">Modifier</a>
-                                                <a href=""
-                                                    class="btn btn-muted">Supprimer</a>
+                                                <a href="#" class="btn btn-muted" onclick="modifierUtilisateur('{{ u.id }}', '{{ u.first_name }}', '{{ u.username }}', '{{ u.email }}', '{{ u.role }}', '{{ u.section.id }}', '{{ u.is_active }}')">Modifier</a>
+                                                <a href="#" class="btn btn-muted">Supprimer</a>
                                             </td>
                                         </tr>
                                         {% empty %}
@@ -2269,6 +2306,30 @@
     </div>
 
     <script>
+
+        function modifierUtilisateur(id, first_name, username, email, role, section, is_active){
+            document.getElementById("id_utilisateur").value = id;
+            document.getElementById("user_username").value = username;
+            document.getElementById("user_nom").value = first_name;
+            document.getElementById("user_email").value = email;
+            document.getElementById("user_role").value = role;
+            document.getElementById("user_section").value = section;
+            
+            // Gestion du statut actif
+            const activeCheckbox = document.getElementById("user_is_active");
+            if (activeCheckbox) {
+                activeCheckbox.checked = (is_active === 'True' || is_active === true);
+            }
+            
+            if (submitBtn) submitBtn.textContent = "Mettre à jour l'utilisateur";
+
+            // Masquer l'obligation du mot de passe en mode édition
+            const pwdInput = document.getElementById("user_password");
+            if (pwdInput) {
+                pwdInput.required = false;
+                document.getElementById("password_hint").style.display = "block";
+            }
+        }
 
         function modifierSection(id, section, is_active){
             document.getElementById("id_section").value = id;
@@ -2717,6 +2778,38 @@
             .catch(error => {
                 console.error("Erreur:", error);
                 document.getElementById("section-success").innerHTML = "Une erreur est survenue.";
+            });
+        });
+
+        document.getElementById("profileForm").addEventListener("submit", function(e){
+            e.preventDefault();
+            let form = this;
+            let formData = new FormData(form);
+
+            fetch("{% url 'update_profile' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let message = document.getElementById("profile-update-success");
+                if(data.success){
+                    message.style.color = "#10b981";
+                    message.innerHTML = '<i class="fas fa-check-circle" style="margin-right: 8px;"></i>' + data.message;
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    message.style.color = "#ef4444";
+                    message.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>' + data.message;
+                }
+            })
+            .catch(error => {
+                console.error("Erreur:", error);
+                document.getElementById("profile-update-success").innerHTML = "Une erreur est survenue.";
             });
         })
                 

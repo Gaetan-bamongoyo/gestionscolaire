@@ -10,7 +10,8 @@ urlpatterns = [
     path('login_user/', loginUser, name='login_user'),
     path('nouveau_utilisateur/', nouveau_utilisateur, name='nouveau_utilisateur'),
     path('update_ecole', update_ecole, name='update_ecole'),
-    path('nouvelle_section', nouvelle_section, name='nouvelle_section')
+    path('nouvelle_section', nouvelle_section, name='nouvelle_section'),
+    path('update_profile', update_profile, name='update_profile')
 ]
 
 

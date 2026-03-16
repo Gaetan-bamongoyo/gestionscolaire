@@ -125,5 +125,5 @@ def comptabilitePage(request):
     if request.user.is_authenticated:
         ecole = request.user.ecole
         section = request.user.section
-        eleves = Eleve.objects.filter(classe__section__ecole=ecole)
+        eleves = Inscriptions.objects.filter(classe__section__ecole=ecole)
         return render(request, 'comptabilite/comptabilite.html', {'eleves': eleves})

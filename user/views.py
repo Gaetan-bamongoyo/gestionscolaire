@@ -152,25 +152,61 @@ def nouveau_utilisateur(request):
                     'message': 'Section invalide.'
                 })
 
-            # verifier si l'utilisateur existe deja
+            get_id = data.get('id_utilisateur')
+            get_is_active = True if data.get('is_active') == 'on' else False
+
+            # verifier si l'utilisateur id existe et on modifier
+            if get_id and Utilisateurs.objects.filter(id = get_id).exists():
+                user_to_update = Utilisateurs.objects.get(id = get_id)
+                
+                # Vérifications d'unicité en excluant l'utilisateur actuel
+                if Utilisateurs.objects.filter(username=get_username).exclude(id=get_id).exists():
+                    return JsonResponse({'success': False, 'message': 'Ce nom d\'utilisateur est déjà pris.'})
+                
+                if Utilisateurs.objects.filter(email=get_email).exclude(id=get_id).exists():
+                    return JsonResponse({'success': False, 'message': 'Cet email est déjà utilisé.'})
+
+                user_to_update.username = get_username
+                user_to_update.email = get_email
+                user_to_update.role = get_role
+                user_to_update.section = target_section
+                user_to_update.first_name = get_nom
+                user_to_update.is_active = get_is_active
+                
+                if get_password:
+                    user_to_update.set_password(get_password)
+                
+                user_to_update.save()
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Utilisateur mis à jour avec succès.'
+                })
+
+            # verifier si l'utilisateur existe deja (Creation)
             if Utilisateurs.objects.filter(username = get_username).exists():
                 return JsonResponse({
                     'success': False,
                     'message': 'Un utilisateur avec ce nom d\'utilisateur existe deja.'
                 })
             
-            # verifier si l'email existe deja
+            # verifier si l'email existe deja (Creation)
             if Utilisateurs.objects.filter(email = get_email).exists():
                 return JsonResponse({
                     'success': False,
                     'message': 'Un utilisateur avec ce email existe deja.'
                 })
             
-            # verifier si le role super-admin par rapport a la section existe deja
+            # verifier si le role admin pour cette section existe déjà (Creation)
             if get_role == 'admin' and Utilisateurs.objects.filter(role = 'admin', section = target_section, ecole = ecole).exists():
                 return JsonResponse({
                     'success': False,
                     'message': 'Un admin existe déjà pour cette section.'
+                })
+
+            if not get_password:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Le mot de passe est obligatoire pour un nouvel utilisateur.'
                 })
 
             # enregistrement de nouveau utilisateur
@@ -181,7 +217,8 @@ def nouveau_utilisateur(request):
                 email = get_email,
                 ecole = ecole,
                 section = target_section,
-                first_name = get_nom
+                first_name = get_nom,
+                is_active = get_is_active
             )
             return JsonResponse({
                 'success': True,
@@ -270,3 +307,41 @@ def nouvelle_section(request):
                 'success': False,
                 'message': 'Une erreur est survenue.'
             })
+
+@login_required
+def update_profile(request):
+    if request.method == 'POST':
+        user = request.user
+        data = request.POST
+        
+        get_nom = data.get('first_name')
+        get_postnom = data.get('last_name')
+        get_email = data.get('email')
+        get_username = data.get('username')
+        get_photo = request.FILES.get('photo')
+        
+        # Validation
+        if not get_username or not get_email:
+            return JsonResponse({'success': False, 'message': 'Le nom d\'utilisateur et l\'email sont requis.'})
+            
+        # Check if username exists for another user
+        if Utilisateurs.objects.filter(username=get_username).exclude(id=user.id).exists():
+            return JsonResponse({'success': False, 'message': 'Ce nom d\'utilisateur est déjà utilisé.'})
+            
+        # Check if email exists for another user
+        if Utilisateurs.objects.filter(email=get_email).exclude(id=user.id).exists():
+            return JsonResponse({'success': False, 'message': 'Cet email est déjà utilisé.'})
+            
+        user.first_name = get_nom
+        user.last_name = get_postnom
+        user.username = get_username
+        user.email = get_email
+        
+        if get_photo:
+            user.photo = get_photo
+            
+        user.save()
+        
+        return JsonResponse({'success': True, 'message': 'Profil mis à jour avec succès.'})
+    
+    return JsonResponse({'success': False, 'message': 'Méthode non autorisée.'})

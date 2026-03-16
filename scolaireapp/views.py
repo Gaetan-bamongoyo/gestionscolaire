@@ -199,7 +199,7 @@ def settingPage(request):
 
         # recuperer les roles enregistrer deja
         role_disponible = [
-            "enseignant","controleur","comptable","secretaire", "super-admin"
+            "enseignant","controleur","comptable","secretaire", "super-admin","admin"
         ]
 
         # recuperer les sections de l'ecole
