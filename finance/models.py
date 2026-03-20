@@ -35,14 +35,14 @@ class RepartitionFrais(models.Model):
 
 class Paiement(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    eleve = models.ForeignKey(Eleves, on_delete=models.CASCADE)
-    frais = models.ForeignKey(Frais, on_delete=models.CASCADE)
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    ecole = models.ForeignKey(Ecole, on_delete=models.CASCADE)
-    annee = models.ForeignKey(AnneeScolaires, on_delete=models.CASCADE)
+    eleve = models.ForeignKey(Eleves, on_delete=models.CASCADE, blank=True, null=True)
+    frais = models.ForeignKey(RepartitionFrais, on_delete=models.CASCADE, blank=True, null=True)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE, blank=True, null=True)
+    ecole = models.ForeignKey(Ecole, on_delete=models.CASCADE, blank=True, null=True)
+    annee = models.ForeignKey(AnneeScolaires, on_delete=models.CASCADE, blank=True, null=True)
     montant = models.IntegerField()
     date = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(Utilisateurs, on_delete=models.CASCADE)
+    user = models.ForeignKey(Utilisateurs, on_delete=models.CASCADE, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     
     class Meta:

@@ -718,6 +718,84 @@
                 width: 100%;
             }
         }
+
+        /* Suggestions & Frais */
+        .form-group {
+            position: relative;
+        }
+
+        .suggestion {
+            position: absolute;
+            top: calc(100% - 4px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .suggestion:not(:empty) {
+            display: block;
+        }
+
+        .suggestion div {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .suggestion div:hover {
+            background: #f0fdf4;
+            color: var(--finance-green);
+        }
+
+        .suggestion div:last-child {
+            border-bottom: none;
+        }
+
+        .frais {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 6px;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            transition: all 0.3s ease;
+        }
+        
+        .frais.active {
+            display: flex;
+        }
+
+        .frais.info {
+            color: var(--button-primary) !important;
+            background: transparent !important;
+            border: none !important;
+        }
+
+        .frais.success {
+            color: var(--finance-green) !important;
+            background: transparent !important;
+            border: none !important;
+        }
+
+        .frais.error {
+            color: var(--button-danger) !important;
+            background: transparent !important;
+            border: none !important;
+        }
     </style>
 </head>
 
@@ -826,35 +904,20 @@
                             <form action="" method="post">
                                 {% csrf_token %}
                                 <div class="form-group">
-                                    <label for="frais_nom">Intitulé du frais</label>
-                                    <input type="text" id="frais_nom" name="frais_nom" placeholder="Ex: Frais d'inscription, Minerval..." required>
+                                    <label for="rechercheEleve">Eleve</label>
+                                    <input type="text" id="rechercheEleve" name="rechercheEleve" placeholder="Ex: Entrer le nom de l'eleve..." required>
+                                    <input type="hidden" id="eleve_id" name="eleve_id">
+                                    <div class="suggestion" id="suggestion"></div>
                                 </div>
-                                
+
+                                <div class="montant_restant" style="margin-bottom: 10px;" id="montant_restant"></div>
+
                                 <div class="form-group">
                                     <label for="frais_montant">Montant</label>
                                     <div class="amount-input-wrapper">
                                         <input type="number" step="0.01" id="frais_montant" name="frais_montant" placeholder="0.00" required>
                                         <span class="currency-symbol">CDF</span>
                                     </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="frais_classe">Applicable à (Classe)</label>
-                                    <select id="frais_classe" name="frais_classe">
-                                        <option value="toutes">Toutes les classes</option>
-                                        <!-- Inject classes here -->
-                                        <option value="1">1ère Année</option>
-                                        <option value="2">2ème Année</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="frais_periode">Périodicité</label>
-                                    <select id="frais_periode" name="frais_periode">
-                                        <option value="annuel">Annuel (Unique)</option>
-                                        <option value="trimestre">Par Trimestre</option>
-                                        <option value="mensuel">Mensuel</option>
-                                    </select>
                                 </div>
 
                                 <button type="submit" class="btn-submit">
@@ -1063,7 +1126,108 @@
         // Initialiser la première vue
         document.addEventListener('DOMContentLoaded', () => {
              // Aperçu est affiché par défaut au chargement
+             recherche_eleve();
         });
+
+        function recherche_eleve(){
+            const input = document.getElementById('rechercheEleve');
+            const suggestion = document.getElementById('suggestion');
+            
+            input.addEventListener('keyup', function(){
+                const value = input.value;
+                if(value.length < 2){
+                    suggestion.innerHTML = '';
+                    return;
+                }
+                
+                fetch(`/finance/recherche_eleve/?q=${value}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestion.innerHTML = '';
+                        data.forEach(eleve => {
+                            const div = document.createElement('div');
+                            div.textContent = eleve.nom + ' ' + eleve.prenom + ' ' + eleve.postnom;
+                            div.addEventListener('click', function(){
+                                input.value = eleve.nom + ' ' + eleve.prenom + ' ' + eleve.postnom;
+                                suggestion.innerHTML = '';
+                                document.getElementById('eleve_id').value = eleve.id;
+                                console.log(eleve);
+                                recherche_frais_classe(); // Déclencher la recherche de frais ici
+                            });
+                            suggestion.appendChild(div);
+                        });
+                    });
+            });
+        }
+
+        function recherche_frais_classe(){
+            const eleve_id = document.getElementById('eleve_id').value;
+            const montant_restant = document.getElementById('montant_restant');
+            if (!eleve_id) return; // Ne rien faire si on n'a pas sélectionné d'élève
+            
+            fetch(`/finance/recherche_frais_classe/?eleve_id=${eleve_id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists){
+                        montant_restant.dataset.max = data.montant; // Stocker pour validerMontant
+                        montant_restant.innerHTML = `le montant à payer est de ${data.montant} FC`;
+                        montant_restant.style.color = 'green';
+                        validerMontant(); // Valider le champ immédiatement
+                    }
+                    else{
+                        montant_restant.dataset.max = 0; // Aucun frais
+                        montant_restant.innerHTML = `${data.message || 'Aucun frais configuré'}`;
+                        montant_restant.style.color = 'red';
+                        validerMontant(); // Verrouiller le bouton si pas de frais
+                    }
+                });
+        }
+
+        // Fonction pour valider le montant saisi
+        function validerMontant() {
+            const inputMontant = document.getElementById('frais_montant');
+            // Trouver le bouton de soumission le plus proche (dans le formulaire de création de frais)
+            const btnSubmit = document.querySelector('#rechercheEleve').closest('form').querySelector('button[type="submit"]');
+            const montant_restant = document.getElementById('montant_restant');
+            
+            const montantSaisi = parseFloat(inputMontant.value) || 0;
+            const montantMax = parseFloat(montant_restant.dataset.max);
+            
+            if (!isNaN(montantMax)) {
+                if (montantSaisi > montantMax) {
+                    montant_restant.innerHTML = `Erreur : Le montant saisi (${montantSaisi} FC) dépasse le reste à payer de ${montantMax} FC`;
+                    montant_restant.style.color = 'red';
+                    btnSubmit.disabled = true;
+                    btnSubmit.style.opacity = '0.5';
+                    btnSubmit.style.cursor = 'not-allowed';
+                } else if (montantMax === 0) {
+                    montant_restant.innerHTML = `Paiement impossible : Aucun frais exigible.`;
+                    montant_restant.style.color = 'red';
+                    btnSubmit.disabled = true;
+                    btnSubmit.style.opacity = '0.5';
+                    btnSubmit.style.cursor = 'not-allowed';
+                } else {
+                    let text = `le montant à payer est de ${montantMax} FC`;
+                    if(montantSaisi > 0) {
+                        text += ` (Reste après paiement: ${montantMax - montantSaisi} FC)`;
+                    }
+                    montant_restant.innerHTML = text;
+                    montant_restant.style.color = 'green';
+                    btnSubmit.disabled = false;
+                    btnSubmit.style.opacity = '1';
+                    btnSubmit.style.cursor = 'pointer';
+                }
+            } else {
+                // Pas de max ou pas appelé
+                btnSubmit.disabled = false;
+                btnSubmit.style.opacity = '1';
+                btnSubmit.style.cursor = 'pointer';
+            }
+        }
+
+        // Ecouteur sur le champ montant
+        document.getElementById('frais_montant').addEventListener('input', validerMontant);
+
     </script>
 </body>
 
