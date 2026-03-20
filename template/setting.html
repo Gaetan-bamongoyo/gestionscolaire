@@ -2479,7 +2479,7 @@
         document.getElementById("repartitionForm").addEventListener("submit", function(e){
             e.preventDefault();
             let form = this;
-            let formData = new FormData(form);
+            let formData = new FormData(form); 
 
             fetch("/finance/create_repartition", {
                 method: "POST",

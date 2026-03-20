@@ -901,7 +901,7 @@
                             <div class="form-header">
                                 <h2 class="form-title">Nouveau Type de Frais</h2>
                             </div>
-                            <form action="" method="post">
+                            <form  action="" id="formPaiement" method="post">
                                 {% csrf_token %}
                                 <div class="form-group">
                                     <label for="rechercheEleve">Eleve</label>
@@ -941,42 +941,30 @@
                                 <table class="table" id="table-frais">
                                     <thead>
                                         <tr>
-                                            <th>Intitulé</th>
+                                            <th>Eleve</th>
                                             <th>Montant</th>
-                                            <th>Périodicité</th>
-                                            <th>Cible (Classe)</th>
+                                            <th>Date</th>
+                                            <th>Tranche</th>
                                             <th>État</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Exemple de ligne statique -->
+                                        {% for paiement in paiements %}
                                         <tr>
-                                            <td><strong style="color: var(--text-primary);">Frais d'inscription</strong></td>
-                                            <td class="amount-cell">50.00 $</td>
-                                            <td>Annuel</td>
-                                            <td>Toutes</td>
+                                            <td><strong style="color: var(--text-primary);">{{ paiement.eleve.nom }} {{ paiement.eleve.postnom }} {{ paiement.eleve.prenom }}</strong></td>
+                                            <td class="amount-cell">{{ paiement.montant }}</td>
+                                            <td>{{ paiement.date | date:"d/m/Y" }}</td>
+                                            <td>{{ paiement.frais.motif }}</td>
                                             <td><span class="badge success"><i class="fas fa-check"></i> Actif</span></td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <button class="btn-action edit" title="Modifier"><i class="fas fa-pen"></i></button>
-                                                    <button class="btn-action delete" title="Désactiver"><i class="fas fa-trash"></i></button>
+                                                    <a href="{% url 'delete_paiement' paiement.id %}" class="btn-action delete" title="Supprimer"><i class="fas fa-trash"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td><strong style="color: var(--text-primary);">Minerval T1</strong></td>
-                                            <td class="amount-cell">120.00 $</td>
-                                            <td>Trimestre</td>
-                                            <td>1ère Année</td>
-                                            <td><span class="badge success"><i class="fas fa-check"></i> Actif</span></td>
-                                            <td>
-                                                <div class="action-buttons">
-                                                    <button class="btn-action edit" title="Modifier"><i class="fas fa-pen"></i></button>
-                                                    <button class="btn-action delete" title="Désactiver"><i class="fas fa-trash"></i></button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -1228,6 +1216,37 @@
         // Ecouteur sur le champ montant
         document.getElementById('frais_montant').addEventListener('input', validerMontant);
 
+        // Fonction pour soumettre le formulaire de paiement
+        document.getElementById('formPaiement').addEventListener('submit', function(e){
+            e.preventDefault();
+            let form = this;
+            let formData = new FormData(form);
+            
+            fetch('{% url "create_paiement" %}', {
+                method: 'POST',
+                headers: {
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success){
+                    console.log(data.message);
+                    document.getElementById('eleve_id').value = '';
+                    document.getElementById('frais_montant').value = '';
+                    document.getElementById('montant_restant').innerHTML = '';
+                    document.getElementById('suggestion').innerHTML = '';
+                    document.getElementById('rechercheEleve').value = '';
+                }else{
+                    console.log(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Une erreur est survenue lors du paiement.');
+            });
+        });
     </script>
 </body>
 

@@ -155,7 +155,10 @@ def comptabilitePage(request):
         ecole = request.user.ecole
         section = request.user.section
         eleves = Inscriptions.objects.filter(classe__section__ecole=ecole)
-        return render(request, 'comptabilite/comptabilite.html', {'eleves': eleves})
+
+        # recuperer les paiements
+        paiements = Paiement.objects.filter(ecole=ecole, section=section)
+        return render(request, 'comptabilite/comptabilite.html', {'eleves': eleves, 'paiements': paiements})
 
 # recherche un eleve
 @login_required
@@ -213,7 +216,7 @@ def recherche_frais_classe(request):
             
         montant = 0
         if frais_paye:
-            montant = frais_paye
+            montant = frais.frais - frais_paye
         if montant == 0:
             montant = frais.frais
         data = {
@@ -226,24 +229,116 @@ def recherche_frais_classe(request):
 # enregistrement de paiement de frais scolaire
 @login_required
 def create_paiement(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            data = request.POST
-            get_id = data.get('id_paiement')
-            get_montant = data.get('montant')
-            get_frais = data.get('frais')
-            get_eleve = data.get('eleve')
-            get_frais_id = RepartitionFrais.objects.get(id = get_frais)
-            get_eleve_id = Eleves.objects.get(id = get_eleve)
+    try:
+        if not request.user.is_authenticated:
+            return JsonResponse({"success": False, "message": "Utilisateur non authentifié"})
 
-            # recuperer l'ecole, la section, l'annee et l'utilisateur
-            utilisateur = request.user.id
-            ecole = request.user.ecole
-            section = request.user.section
-            annee = AnneeScolaires.objects.get(ecole = ecole, is_active=True)
+        # recuperer les donnees
+        data = request.POST
+        get_id = data.get('eleve_id')
+        get_montant = data.get('frais_montant')
 
-            # verifier si l'eleve a deja paye le frais par rapport au frais selectionner
-            get_montant_paye = Paiement.objects.filter(eleve = get_eleve_id, frais = get_frais_id, ecole = ecole, section = section, annee = annee).aggregate(Sum("montant"))["montant__sum"] or 0
+        # recuperer l'eleve par son id
+        eleve_id = Eleves.objects.get(id=get_id)
+        
+        if not eleve_id or not get_montant:
+            return JsonResponse({"success": False, "message": "Identifiant élève ou montant manquant."})
 
-            # si le montant est egale a 0 que les donnees considere comme nouveau paiement avec une nouvelle frais id
-            
+        # convertir le montant en float
+        montant = float(get_montant)
+        utilisateur = request.user
+        ecole = request.user.ecole
+        section = request.user.section
+        annee = AnneeScolaires.objects.get(ecole=ecole, is_active=True)
+
+        # recuperer l'inscription
+        inscription = Inscriptions.objects.filter(eleve=get_id, annee=annee).first()
+        if not inscription:
+            return JsonResponse({"success": False, "message": "Inscription introuvable"})
+
+        # recuperer les repartitions par rapport a la classe
+        repartitions = RepartitionFrais.objects.filter(
+            frais__classe=inscription.classe,
+            section=section,
+            ecole=ecole,
+            annee=annee
+        ).order_by("id")
+
+        # recuperer les paiements par rapport a un eleve
+        paiements = Paiement.objects.filter(
+            eleve=get_id,
+            annee=annee,
+            ecole=ecole,
+            section=section
+        )
+
+        # Calcul du déjà payé
+        frais_deja_paye = {}
+        for p in paiements:
+            rid = p.frais
+            frais_deja_paye[rid] = frais_deja_paye.get(rid, 0) + p.montant
+
+        # Répartition intelligente
+        paiement_cree = False
+        for rep in repartitions:
+            rid = rep.id
+            total_frais = rep.montant
+            deja = frais_deja_paye.get(rid, 0)
+
+            reste = total_frais - deja
+
+            if reste <= 0:
+                continue
+            if montant <= 0:
+                break
+
+            if montant >= reste:
+                montant_utilise = reste
+            else:
+                montant_utilise = montant
+
+            Paiement.objects.create(
+                eleve = eleve_id,  # IMPORTANT: Ne pas changer en "eleve" tout court
+                frais = rep,
+                montant = montant_utilise,
+                annee = annee,
+                ecole = ecole,
+                section = section,
+                user = utilisateur
+            )
+            montant -= montant_utilise
+            paiement_cree = True
+
+        if not paiement_cree:
+            return JsonResponse({"success": False, "message": "Aucun paiement enregistré (Le solde de l'élève est peut-être déjà à 0)."})
+
+        return JsonResponse({
+            "success": True,
+            "message": "Paiement enregistré avec succès"
+        })
+    except Exception as e:
+        import traceback
+        return JsonResponse({
+            "success": False, 
+            "message": f"Détail de l'erreur côté serveur : {str(e)}", 
+            "trace": traceback.format_exc()
+        })
+
+# supprimer une paiement
+@login_required
+def delete_paiement(request, id):
+    try:
+        if not request.user.is_authenticated:
+            return JsonResponse({"success": False, "message": "Utilisateur non authentifié"})
+        
+        # recuperer le paiement
+        paiement = Paiement.objects.get(id=id)
+        paiement.delete()
+        return JsonResponse({"success": True, "message": "Paiement supprimé avec succès"})
+    except Exception as e:
+        import traceback
+        return JsonResponse({
+            "success": False, 
+            "message": f"Détail de l'erreur côté serveur : {str(e)}", 
+            "trace": traceback.format_exc()
+        })

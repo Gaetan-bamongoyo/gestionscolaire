@@ -47,7 +47,7 @@ paiements = [
 ]
 
 eleve_id = 1
-nouveau_paiement = 140
+nouveau_paiement = 140 
 
 paiements_eleve = [p for p in paiements if p["eleve_id"] == eleve_id]
 
