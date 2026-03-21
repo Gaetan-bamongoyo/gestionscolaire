@@ -5,7 +5,9 @@ from .models import *
 from django.urls import reverse
 from django.db.models import Sum, Q
 from django.http import JsonResponse
-
+from datetime import datetime
+from django.utils import timezone
+ 
 
 # Create your views here.
 
@@ -156,9 +158,21 @@ def comptabilitePage(request):
         section = request.user.section
         eleves = Inscriptions.objects.filter(classe__section__ecole=ecole)
 
+        # recuperer le montant general de paiements du jour
+        montant_du_jour = Paiement.objects.filter(
+            ecole=ecole,
+            section=section,
+            date__date=timezone.now().date()
+        ).aggregate(Sum("montant"))["montant__sum"] or 0
+
+        # pourcentage des eleves en order par rapport aux frais scolaire
+        total_frais = RepartitionFrais.objects.filter(ecole=ecole, section=section).aggregate(Sum("montant"))["montant__sum"] or 0
+        total_paye = Paiement.objects.filter(ecole=ecole, section=section).aggregate(Sum("montant"))["montant__sum"] or 0
+        pourcentage = int((total_paye / total_frais) * 100)
+
         # recuperer les paiements
-        paiements = Paiement.objects.filter(ecole=ecole, section=section)
-        return render(request, 'comptabilite/comptabilite.html', {'eleves': eleves, 'paiements': paiements})
+        paiements = Paiement.objects.filter(ecole=ecole, section=section).order_by('-date')
+        return render(request, 'comptabilite/comptabilite.html', {'eleves': eleves, 'paiements': paiements, 'montant_du_jour': montant_du_jour, 'pourcentage': pourcentage})
 
 # recherche un eleve
 @login_required
@@ -214,11 +228,9 @@ def recherche_frais_classe(request):
         except Frais.DoesNotExist:
             return JsonResponse({"exists": False, "message": "Aucun frais n'est configuré pour cette classe"})
             
-        montant = 0
-        if frais_paye:
-            montant = frais.frais - frais_paye
-        if montant == 0:
-            montant = frais.frais
+        # Calcul du reste à payer (total exigé - montant déjà payé)
+        montant = max(0, frais.frais - frais_paye)
+        
         data = {
             'exists': True,
             'montant': montant,
@@ -262,7 +274,7 @@ def create_paiement(request):
             section=section,
             ecole=ecole,
             annee=annee
-        ).order_by("id")
+        )
 
         # recuperer les paiements par rapport a un eleve
         paiements = Paiement.objects.filter(
@@ -275,8 +287,9 @@ def create_paiement(request):
         # Calcul du déjà payé
         frais_deja_paye = {}
         for p in paiements:
-            rid = p.frais
-            frais_deja_paye[rid] = frais_deja_paye.get(rid, 0) + p.montant
+            if p.frais:
+                rid = p.frais.id
+                frais_deja_paye[rid] = frais_deja_paye.get(rid, 0) + p.montant
 
         # Répartition intelligente
         paiement_cree = False

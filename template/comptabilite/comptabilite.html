@@ -859,7 +859,7 @@
                         <div class="stat-card">
                             <div class="stat-info">
                                 <span class="stat-title">Recettes du jour</span>
-                                <span class="stat-value">450 $</span>
+                                <span class="stat-value">{{ montant_du_jour }} FC</span>
                             </div>
                             <div class="stat-icon green">
                                 <i class="fas fa-arrow-trend-up"></i>
@@ -877,7 +877,7 @@
                         <div class="stat-card">
                             <div class="stat-info">
                                 <span class="stat-title">Total Élèves en règle</span>
-                                <span class="stat-value">85%</span>
+                                <span class="stat-value">{{ pourcentage }}%</span>
                             </div>
                             <div class="stat-icon blue">
                                 <i class="fas fa-user-check"></i>
@@ -960,7 +960,7 @@
                                             <td>
                                                 <div class="action-buttons">
                                                     <button class="btn-action edit" title="Modifier"><i class="fas fa-pen"></i></button>
-                                                    <a href="{% url 'delete_paiement' paiement.id %}" class="btn-action delete" title="Supprimer"><i class="fas fa-trash"></i></a>
+                                                    <a href="#" onclick="supprimerPaiement('{{ paiement.id }}'); return false;" class="btn-action delete" title="Supprimer"><i class="fas fa-trash"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -1063,7 +1063,7 @@
     </div>
 
     <script>
-        function showSection(sectionId) {
+        function showSection(sectionId, element = null) {
             // Cacher toutes les sections
             document.querySelectorAll('.section').forEach(sec => {
                 sec.classList.add('hidden');
@@ -1075,11 +1075,20 @@
             document.querySelectorAll('.sidebar-item').forEach(item => {
                 item.classList.remove('active');
             });
-            event.currentTarget.classList.add('active');
+            if (element) {
+                element.classList.add('active');
+            } else if (typeof event !== 'undefined' && event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
 
             // Fermer menu mobile si ouvert
             if(window.innerWidth <= 992) {
                 toggleSidebar();
+            }
+            
+            // Mettre à jour l'URL sans recharger
+            if(window.history.pushState) {
+                window.history.pushState(null, null, '#' + sectionId);
             }
         }
 
@@ -1113,6 +1122,17 @@
         
         // Initialiser la première vue
         document.addEventListener('DOMContentLoaded', () => {
+             if(window.location.hash) {
+                 const sectionId = window.location.hash.substring(1);
+                 const item = document.querySelector(`a[onclick*="showSection('${sectionId}')"]`);
+                 if(item) {
+                     showSection(sectionId, item);
+                 } else {
+                     showSection('dashboard');
+                 }
+             } else {
+                 showSection('dashboard');
+             }
              // Aperçu est affiché par défaut au chargement
              recherche_eleve();
         });
@@ -1232,14 +1252,11 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success){
-                    console.log(data.message);
-                    document.getElementById('eleve_id').value = '';
-                    document.getElementById('frais_montant').value = '';
-                    document.getElementById('montant_restant').innerHTML = '';
-                    document.getElementById('suggestion').innerHTML = '';
-                    document.getElementById('rechercheEleve').value = '';
+                    // Recharger la page pour afficher le paiement en restant sur la section frais
+                    window.location.hash = '#frais';
+                    window.location.reload();
                 }else{
-                    console.log(data.message);
+                    alert(data.message);
                 }
             })
             .catch(error => {
@@ -1247,6 +1264,25 @@
                 alert('Une erreur est survenue lors du paiement.');
             });
         });
+
+        // Fonction pour supprimer un paiement en AJAX
+        function supprimerPaiement(id) {
+            fetch(`/finance/delete_paiement/${id}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success){
+                    // Recharger la page pour actualiser le tableau
+                    window.location.hash = '#frais';
+                    window.location.reload();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Une erreur est survenue lors de la suppression.');
+            });
+        }
     </script>
 </body>
 
